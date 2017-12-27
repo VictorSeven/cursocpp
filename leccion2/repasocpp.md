@@ -327,7 +327,7 @@ lista[99] = 1e3; //Último elemento
 ```
 Podemos darle un valor a cada una de ellas utilizando un bucle, por ejemplo:
 
-``` c+
+``` c++
 int i;
 double lista[100];
 for (i=0; i < 100; i++)
@@ -341,7 +341,7 @@ Inicializa todos los elementos de la lista a 1.0. A la hora de trabajar con list
 Hay que notar, además, que la cantidad de datos que podemos almacenar en un array está limitada por nuestra RAM. Debemos ser cautelosos a la hora de trabajar con arrays grandes. Por defecto, C++ evita que pongamos tamaños demasiado grandes a los arrays. Si lo intentamos, el programa simplemente se parará al ejecutarlo, sin hacer nada. En otros casos, debemos tener cuidado y ser conscientes de la memoria que almacenamos siempre.
 Podemos ver qué tamaño tiene (en bytes) cualquier variable de C++ usando `sizeof`, de la siguiente manera:
 
-``` c+
+``` c++
 int i;
 int lista[100];
 cout << sizeof(i) << " " << sizeof(lista) << endl;
@@ -351,7 +351,7 @@ El resultado de este programa es `4 400`, indicando que un solo entero ocupa 4 b
 
 Podemos hacer, además, arrays de arrays, que sería el equivalente a una tabla con filas y columnas, o arrays 3D, que tendrían otra dimensión. Por ejemplo, para crear una tabla y rellenar todas sus entradas, necesitamos ahora dos bucles,
 
-``` c+
+``` c++
 int i,j;
 double tabla[10][5];
 for (i=0; i < 10; i++)
@@ -369,7 +369,7 @@ Es claro que trabajar con tablas más alla de 3D tiene unos requerimientos muy a
 
 Finalmente, vamos a repasar la estructura de las funciones en C++.  Una función es un trozo de código que vive fuera de la función principal `main`, y que puede ser llamada cuantas veces queramos para ejecutar ese pequeño trozo de código, sin andar copiando, pegando y/o modificando. Por ejemplo, supongamos que yo le doy una variable a la función, y quiero calcular como resultado un polinomio de segundo grado, $q(x)=x^2-x+2$. Entonces, puedo definir
 
-``` c+
+``` c++
 double qx(double x)
 {
     return x*x-x+2;
@@ -378,7 +378,7 @@ double qx(double x)
 
 Como puedes ver, la sintaxis de una función es muy sencilla. Tengo que darle un tipo, un nombre y unos argumentos de entrada. La función, tras realizar su cometido, devolverá (usando `return`) el resultado. Puedo calcular valores del polinomio usando la función:
 
-``` c+
+``` c++
 double x;
 for (x=-1; x<=1; x+=0.01)
 {
@@ -387,7 +387,7 @@ for (x=-1; x<=1; x+=0.01)
 ```
 Una función puede elegir no devolver ningún valor, usando el tipo `void`. Por ejemplo, la siguiente muestra la suma de dos números, sin devolver nada:
 
-``` c+
+``` c++
 void suma(double x, double y)
 {
     cout << x+y << endl;
@@ -400,7 +400,7 @@ Y se le puede llamar sencillamente con `suma(4.0,1.0)`, por ejemplo.
 Una función no puede cambiar, por defecto, los valores de las variables que le damos como argumento. Por ejemplo, si modificamos la función suma de la siguiente manera:
 
 
-``` c+
+``` c++
 void suma2(double x, double y)
 {
     x = 1.0;
@@ -412,7 +412,7 @@ void suma2(double x, double y)
 
 La función siempre mostrará `1.0` independientemente del valor que le demos.  Pero no es capaz de cambiar el valor de sus argumentos fuera de la función, es decir, el programa
 
-``` c+
+``` c++
 double x = 5.0;
 double y = -1.0;
 suma2(x,y);
@@ -426,7 +426,7 @@ Es decir, que `x` e `y`  no han cambiado su valor fuera de la función. Esto es 
 
 Aunque esto puede ser deseable en muchas ocasiones, en otras queremos explícitamente que una función cambie el valor de nuestras variables. Esto se puede hacer dándole como argumento una referencia a la variable, en lugar de la variable en sí misma. Al hacerlo, le estaremos dando el lugar físico en el ordenador donde se encuentra la variable, y modificará ese valor directamente.
 
-``` c+
+``` c++
 void suma3(double &x, double &y)
 {
     x = 1.0;
@@ -445,7 +445,7 @@ de modo que realmente ha cambiando el valor de `x` e `y` . Nótese que en este c
 Por último, resaltar que los arrays siempre se pasan por referencia, es decir, como si tuvieran delante una `&` aunque esta no aparezca explícitamente. Esto es bueno, ya que **al pasar un array como argumento a una función, no estamos copiando el array completo, sino simplemente le decimos al ordenador dónde está en la memoria, que es mucho más rápido y consume menos RAM.**
 Realicemos un ejemplo, una función que calcula la media de los elementos de un array, y después pone todos sus datos a cero:
 
-``` c+
+``` c++
 double promedio(lista[100])
 {
     double suma = 0.0;
@@ -462,7 +462,7 @@ double promedio(lista[100])
 
 Esta función se invoca de la siguiente manera:
 
-``` c+
+``` c++
 double lista[100];
 //Rellenamos lista de alguna manera...
 double media = promedio(lista);
@@ -476,7 +476,7 @@ Observa que al llamarla no hace falta ponerle corchetes a `lista` , y que lo que
 
 Una función no puede devolver un array, y la solución habitual es pasar el array resultado como argumento, para rellenarlo después. Por ejemplo, la siguiente función recibe un número y un array como argumentos. En `resultado` se guarda lo que queda de multiplicar cada elemento del array por el número:
 
-``` c+
+``` c++
 void marray(double a, double lista[100], double resultado[100])
 {
     int i;
@@ -491,7 +491,7 @@ void marray(double a, double lista[100], double resultado[100])
 Esta función se puede invocar de la siguiente manera:
 
 
-``` c+
+``` c++
 double x = 2.0;
 double lista[100];
 double resultado[100];

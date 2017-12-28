@@ -2,7 +2,7 @@
 
 ## Variables y estructura básica
 
-###Hola Mundo
+### Hola Mundo
 
 Un programa de C++ tiene una estructura como la siguiente:
 

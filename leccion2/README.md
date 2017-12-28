@@ -499,5 +499,241 @@ double resultado[100];
 marray(x,lista,resultado);
 //Ver que lista*2 = resultado
 cout << lista[43] << " " << resultado[43] << endl;
+```
 
+Una función puede tener varias definiciones, con distintos argumentos, siempre y cuando el compilador pueda diferenciarlas. Por ejemplo, podemos tener:
+
+
+``` c++
+int suma(int a, int b)
+{
+    return a+b;
+}
+
+double suma(double a, double b)
+{
+    return a+b;
+}
+```
+
+Dependiendo de los argumentos que le demos al llamar a `suma` , C++ elige la sobrecarga correcta para nuestra función. Esto es útil para tener una función cuyo objetivo final es el mismo pero debe poder admitir distintos tipos de parámetros.
+
+## Ficheros de cabecera
+
+Hasta el momento, hemos visto como crear funciones. Sin embargo, no hemos puesto ningún código completo. Para poder llamar a una función, al igual que ocurre con las variables, debe estar declarada antes de llamarla. Por tanto, una opción es escribir las funciones encima de la función principal:
+
+
+```c++
+#include<iostream>
+#include<cstdlib>
+
+using namespace std;
+
+void suma(double x, double y)
+{
+    cout << x+y << endl;
+    return;
+}
+
+int main(void)
+{
+    suma(2.0, 3.0);
+    return 0;
+}
+```
+
+Si la función está escrita debajo, e intentamos ejecutar el código el compilador nos dirá que no reconoce `suma` .  Esto es aplicable a cualquier otra función (digamos que se llama `usa_suma` que utilice `suma` . Si `suma`  está debajo de `usa_suma` , el compilador nos dirá que `suma`  no está aún definido. Una opción para arreglar este problema es *declarar* la funciones al principio. De esta forma, C++ reconoce que las funciones existen, y podemos escribirlas en cualquier parte del código. El ejemplo anterior quedaría así:
+
+```c++
+#include<iostream>
+#include<cstdlib>
+
+using namespace std;
+
+//Declarar función
+void suma(double x, double y);
+
+int main(void)
+{
+    suma(2.0, 3.0);
+    return 0;
+}
+
+//Definir función
+void suma(double x, double y)
+{
+    cout << x+y << endl;
+    return;
+}
+
+```
+
+Observa que la declaración de la función acaba también con `;` . Aunque esto hace más cómoda la definición de las funciones, puede que tengamos otro problema. Un módulo o clase muy grande, con muchas funciones. En tal caso, convendría escribir tal vez la mitad de las funciones en un fichero y la mitad en otro. Pero todo, en el fondo, es el mismo código, y ha de reconocerse como tal. Para ello tenemos los ficheros de cabecera. Estos ficheros suelen tener la extensión `.h` y contienen únicamente la declaración de nuestras funciones, que pueden estar definidas después. Por ejemplo,
+
+En `funciones.h`, declaramos la función:
+```c++
+using namespace std;
+void suma(double x, double y);
+```
+En `funciones.cpp`,  la definimos. Debemos hacer `include` a `funciones.h`  para que detecte la declaración. Si ambos están en la misma carpeta, se puede hacer como indico a continuación:
+```c++
+#include "funciones.h" 
+//Requiere que funciones.h esté en la misma carpeta
+void suma(double x, double y)
+{
+    cout << x+y << endl;
+    return;
+}
+```
+En `programa.cpp`, escribimos el programa, incluyendo a `funciones.h` de nuevo:
+```c++
+#include<iostream>
+#include<cstdlib>
+#include "funciones.h" 
+
+int main(void)
+{
+    suma(2.0, 3.0);
+    return 0;
+}
+```
+
+Observa que en este último caso no tenemos que definir nada porque todo está en el fichero de cabecera. Estos ficheros serán los que utilicemos a la hora de crear una biblioteca. 
+
+No se puede hacer `include`  al mismo fichero dos veces.  Esto sucede porque lo que hace `include` en realidad es copiar el código del fichero de cabecera a nuestro fichero, y si lo hacemos dos veces, tenemos declaraciones por duplicado. Supongamos que tenemos dos bibliotecas, digamos `A` y `B` , y que ambas hacen un include a la misma biblioteca `X` . En el caso de que en nuestro código queramos incluir ambas, haríamos:
+
+```c++
+#include "a.h" 
+#include "b.h" //Erroooor!
+```
+
+Pero como `A`  ya incluye a `X`, estaríamos haciendo dos `includes`  a la biblioteca `X` , lo que lleva al error. La forma de solucionar esto es evitar hacer un `include`  a `X`  dentro de `B` . Esto se hace con directivas del preprocesador. Dentro de `x.h` , escribimos el siguiente código:
+
+```c++
+#ifndef _X_INCLUDED //Si X no está definido...
+#define _X_INCLUDED //...lo definimos...
+
+//AQUÍ VA TODO NUESTRO ENCABEZADO x.h
+
+#endif //..y cerramos el if
+```
+
+De esta forma, solo se pasa por el código del encabezado la primera vez -cuando `_X_INCLUDED` no está definido. Las siguientes, no tiene ningún efecto. 
+
+## Entrada y salida a ficheros
+
+Una de las cuestiones más importantes a la hora de hacer cálculo numérico es sacar los datos de la simulación o el cálculo a un fichero de salida. Los datos se podrán representar después con una utilidad dedicada (gnuplot, matplotlib, Octave...) o bien cargarlos en un lenguaje de más alto nivel (como Python) para analizarlos.
+
+En realidad, ya sabemos cómo trabajar con ficheros. En C++, la pantalla en sí misma es tratada como un fichero. `cout` es un fichero al que nosotros escribimos todo el rato, y `cin`, un fichero del que leemos. 
+
+Para escribir o leer, en otros ficheros distintos necesitamos incluir primero la biblioteca pertinente:
+
+```c++
+#include<fstream>
+```
+
+Esta contiene dos tipos de objetos: los *output file stream* `ofstream`, usados para escribir en ficheros, y los *input file stream*, `ifstream`  para leer de ellos. Para escribir en un fichero, hacemos lo siguiente:
+
+```c++
+ofstream fichero;
+fichero.open("ficheroprueba.txt");
+fichero << "Escribo igual que con cout" << endl;
+fichero.close(); //Cierra el fichero
+```
+
+La directiva `open` abre el fichero que queremos (y si no existe, se crea), y todo lo que se escriba irá a este fichero. Tenemos que acordarnos siempre de cerrar los ficheros, porque si no podrían quedar abiertos tras la ejecución del programa, resultando en errores al intentar trabajar de nuevo con ellos. **Es buena práctica escribir el `close`  nada más terminar de escribir el `open`, para que no se nos olvide.**
+
+Una vez cerrado, podemos abrir otro fichero distinto (o el mismo) para continuar escribiendo. Es posible tener varios `oftream` trabajando al mismo tiempo, escribiendo varios ficheros. No obstante, hay que recordar que escribir en disco es una operación relativamente lenta, y en muchas ocasiones es la que ocupará un porcentaje importante del tiempo de ejecución del programa. A la hora de hacer simulaciones, debemos tener cuidado de seleccionar bien qué escribimos y reducir el número de datos al mínimo para acelerar el programa. Por ejemplo, el siguiente programa que calcula una trayectoria de un objeto:
+
+```c++
+ofstream output;
+output.open("resultado.txt")
+double x;
+for (t=0; t < 1e6; t += 0.01)
+{
+    x = siguiente_paso_trayectoria(t);
+    output << t << " " << x << endl;
+}
+output.close();
+```
+
+Este programa tiene muchos problemas:
+
+1. **El tamaño del fichero será enorme.** Cada carácter ocupa un byte. En cada iteración del bucle, escribimos unos 10 bytes: 6 caracteres para `t` , un espacio, 2 caracteres para `x` , y un salto de línea. Por supuesto, si `t=1235` , solamente esta variable necesita 4 bytes, pero vamos hay que contar decimales y los números que más va a escribir son de 5 cinco cifras.  Hay cien millones de iteraciones, lo que lleva a mil millones de bytes: 1GB. 
+2. **El programa será muy lento.** Muy probablemente la función `siguiente_paso_trayectoria(t);` será más rápida que escribir en un fichero, de modo que al final, gran parte del tiempo empleado por el programa es el tiempo de escritura.
+
+Generalmente, no queremos cambiar la actualización `t+=0.01`, porque la precisión del algoritmo suele dependender de esto. Sin embargo, a menudo no necesitamos tantos datos. La solución ideal es sencillamente no escribir en todos los pasos:
+
+```c++
+ofstream output;
+output.open("resultado.txt")
+double x;
+int i;
+
+i = 0;
+for (t=0; t < 1e6; t += 0.01)
+{
+    x = siguiente_paso_trayectoria(t);
+    if (i % 1000 == 0) output << t << " " << x << endl;
+    i++;
+    
+}
+output.close();
+```
+
+Con el código adecuado es posible incluso especificar cuántos puntos queremos de salida. 
+
+Para la lectura de ficheros, debemos imaginarnos que el fichero es en realidad como un usuario que introduciendo valores. Si antes has cacharreado con `cin` , habrás visto que si el código es:
+
+```c++
+double x1, x2;
+cin >> x1;
+cin >> x2;
+```
+entonces el usuario debe escribir un número, pulsar intro, y escribir otro número. Cuando se lee un fichero, cuanquier separador (intro, espacio o tabulador) es interpretado como un intro. Por tanto, el siguiente fichero:
+
+	1.0  0.2
+	5.0  -1.2
+puede ser leído como
+
+```c++
+double x1, x2, x3, x4;
+ifstream input;
+input.open("matrix.txt")
+input >> x1; //1.0
+input >> x2; //0.2
+input >> x3; //5.0
+input >> x4; //-1.2
+input.close()
+```
+
+O más corto, como un array:
+
+```c++
+double x[4]
+int i;
+ifstream input;
+input.open("matrix.txt")
+for (i=0; i < 4; i++)
+{
+    input >> x[i];
+}
+input.close()
+```
+
+E incluso con estructura de matriz:
+
+```c++
+double x[2][2]
+int i,j;
+ifstream input;
+input.open("matrix.txt")
+for (i=0; i < 2; i++)
+{
+    for (j=0; j < 2; j++)
+    {
+        input >> x[i][j];
+    }
+}
+input.close()
 ```

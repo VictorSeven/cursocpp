@@ -1,15 +1,18 @@
 #include<iostream>
 #include<cstdlib>
 
-using namespace std;
+#include "funciones.h"
 
 int main(void)
 {
-    int entero = 4; //Un número entero, positivo o negativo
-    float flotante = -1.2; //Un número decimal, precisión simple
-    double doble = 1.4e12; //Número decimal, precisión doble
-    bool booleano = false; //Verdadero o falso
-    char caracter = 'b'; //Caracter
+    double d1, d2, d3;
+
+    cout << "Introduzca dos números separados por un espacio:   ";
+    cin >> d1 >> d2;
+
+    d3 = suma(d1, d2);
+
+    cout << d3 << endl;
 
     return 0;
 }

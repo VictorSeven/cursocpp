@@ -70,7 +70,7 @@ class polinomio
 public:
     double coeficientes[MAX_P_SIZE];
     
-	polinomio::polinomio(int grado, double coefs[MAX_P_SIZE])
+    polinomio(int grado, double coefs[MAX_P_SIZE])
 	{
 	    int j;
 	    n = grado;
@@ -511,7 +511,7 @@ polinomio<T> polinomio<T>::operator+(const polinomio &other) const
 
 ```
 
-El resto de métodos se cambian de la misma manera. De esta manera, podemos utilizar la clase con plantillas indicando el tipo del polinomio:
+El resto de métodos se cambian de la misma manera. podemos utilizar la clase con plantillas indicando el tipo del polinomio:
 
 ```c++
 int c1[3] = {1, 3, 1};

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-template<class T, int N>
+template<class T>
 class polinomio
 {
 public:
@@ -16,8 +16,8 @@ public:
     T get_coef(int j) const;
     int get_grado() const;
 
-    polinomio<T,N> operator+(const polinomio &other) const;
-    polinomio<T,N>& operator+=(const polinomio &other);
+    polinomio<T> operator+(const polinomio &other) const;
+    polinomio<T>& operator+=(const polinomio &other);
     T& operator[](const int j);
 
 

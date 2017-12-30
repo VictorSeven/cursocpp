@@ -15,7 +15,7 @@ public:
     double get_coef(int j) const;
     int get_grado() const;
 
-    polinomio operator+(const polinomio &other);
+    polinomio operator+(const polinomio &other) const;
     polinomio& operator+=(const polinomio &other);
     double& operator[](const int j);
 
@@ -40,7 +40,7 @@ polinomio::polinomio(int grado, double coefs[MAX_P_SIZE])
 }
 
 
-polinomio polinomio::operator+(const polinomio &other)
+polinomio polinomio::operator+(const polinomio &other) const
 {
     int suma_grado = max(n, other.get_grado()); //Grado del nuevo polinomio
     double coefs[MAX_P_SIZE]; //Coeficientes

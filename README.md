@@ -12,7 +12,7 @@ El curso está dividido en dos partes: una de repaso del lenguaje (ya que los es
 
 3. 	**Creación de clases y objetos.** Plantillas de funciones; plantillas de clases. Sobrecarga de operadores.
 
-4.	**La librería estándar de C++:** números complejos, generación de números pseudoaleatorios, memoria dinámica, funciones especiales...
+4.	**La biblioteca estándar de C++:** números complejos, generación de números pseudoaleatorios, memoria dinámica, funciones especiales...
 
 5.	**Optimizar y depurar código:** localización de errores, optimización desde el compilador, trucos para mejorar el rendimiento de un programa en C++. 
 

@@ -44,9 +44,7 @@ cout << log(c1) << endl;
 
 De estas operaciones, es interesante la línea marcada `//*` , ya que en ella podemos ver una operación que involucra un `double`  (el número `2.0`) con un complejo. Esto no da error y puede hacerse. Sin embargo, un entero sí daría error. Es posible multiplicar complejos de un tipo por números de su mismo tipo, pero sin mezclar. Del resto, lo que más llama la atención es el hecho de que C++ pueda trabajar 
 
-La librería de compejos permite, por ejemplo, escribir fácilmente una versión chapucera (pero funcional) de una transformada discreta de Fourier, que está definida como:
-
-![equation](http://bit.ly/2C3UzaY)
+La librería de compejos permite, por ejemplo, escribir fácilmente una versión chapucera (pero funcional) de [una transformada discreta de Fourier](https://en.wikipedia.org/wiki/Discrete_Fourier_transform#Definition).
 
 Para `k=0,1,...,N-1`. Con la biblioteca de complejos, esto se puede trasladar directamente a código de una forma sencilla:
 

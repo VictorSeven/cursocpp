@@ -46,9 +46,9 @@ De estas operaciones, es interesante la línea marcada `//*` , ya que en ella po
 
 La librería de compejos permite, por ejemplo, escribir fácilmente una versión chapucera (pero funcional) de una transformada discreta de Fourier, que está definida como:
 
-<p align="center"><img alt="$$x_k=\sum_{n=0} ^{N-1} x_n e^{\frac{-2\pi i}{N} k n}$$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/0d2acc2453c35230b93add692bdab559.svg?invert_in_darkmode" align=middle width="141.75381pt" height="47.57808pt"/></p>
+![equation](http://bit.ly/2C3UzaY)
 
-Para <img alt="$k=0,1,\ldots,N-1$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/ad7ab6162b4ae3adf8c19a7b92cb75a7.svg?invert_in_darkmode" align=middle width="134.257035pt" height="22.74591pt"/>. Con la biblioteca de complejos, esto se puede traslador directamente a código de una forma sencilla:
+Para `k=0,1,...,N-1`. Con la biblioteca de complejos, esto se puede trasladar directamente a código de una forma sencilla:
 
 ```c++
 complex<double> xw(const double xn[100], const int w)
@@ -94,7 +94,7 @@ for (i=0; i < 100; i++)
 }
 ```
 
-Podemos observar que el resultado de este ejemplo es prácticamente 0.0, salvo para los valores con <img alt="$k=8,92$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/907bbd3469d3d2f8638c23bd5a43716b.svg?invert_in_darkmode" align=middle width="62.76765pt" height="22.74591pt"/>, ya que <img alt="$92=100-8\equiv -8$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/2b42955822df901317ee69d4d94f8ec5.svg?invert_in_darkmode" align=middle width="133.84041pt" height="21.10812pt"/> (la transformada de Fourier es simétrica respecto de <img alt="$k=0$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/8df03261b67972f1573d96bd4fcb462e.svg?invert_in_darkmode" align=middle width="39.101865pt" height="22.74591pt"/> y tiene picos en las frecuencias de la función senoidal). 
+Podemos observar que el resultado de este ejemplo es prácticamente 0.0, salvo para los valores con `k=8,92`, ya que `92=100-8= -8` (la transformada de Fourier es simétrica respecto de `k=0` y tiene picos en las frecuencias de la función senoidal). 
 
 El comentario importante es la aparición de la función `abs`, que devuelve el módulo cuadrado de un número complejo (en los reales, recordemos, solo calcula el valor absoluto).  Se puede obtener la fase, en radianes, con `arg`. Otras funciones interesantes son:
 
@@ -256,22 +256,22 @@ Por tanto, en general, es mejor pasar los vectores por referencia siempre.
 
 A menudo, en nuestros programas necesitaremos generar números aleatorios. Como probablemente ya sabes, un ordenador no puede generar números realmente aleatorios, sino solamente *pseudoaleatorios*: es una serie determinista que es indiferenciable de una serie aleatoria... siempre y cuando no excedas su periodo. 
 
-En C++, habitualment se usa `rand()`  para obtener estos números. Aunque para algunas aplicaciones está bien, `rand`  emplea un generador de aleatorios llamado lineal congruente. La serie tiene "solo" 2.147.483.647 números diferentes. Aunque dos mil millones (<img alt="$\approx 10^9$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/d4608f0069e796bccd0ed2f4232086c5.svg?invert_in_darkmode" align=middle width="40.20885pt" height="26.70657pt"/>)  aleatorios puedan parecer bastantes, para aplicaciones específicas se quedan muy cortos. Los métodos Monte Carlo, usados muy comúnmente en física estadística, física de partículas, o para integrales en muchas dimensiones, pueden exceder fácilmente esta cifra. Además, la calidad del generador no es precisamente la mejor.
+En C++, habitualment se usa `rand()`  para obtener estos números. Aunque para algunas aplicaciones está bien, `rand`  emplea un generador de aleatorios llamado lineal congruente. La serie tiene "solo" 2.147.483.647 números diferentes. Aunque dos mil millones (`~10^9`)  de aleatorios puedan parecer bastantes, para aplicaciones específicas se quedan muy cortos. Los métodos Monte Carlo, usados muy comúnmente en física estadística, física de partículas, o para integrales en muchas dimensiones, pueden exceder fácilmente esta cifra. Además, la calidad del generador no es precisamente la mejor.
 
-Además, no solo eso: un uso básico suele requerir obtener números a partir de una distribución uniforme (por ejemplo, simular un dado o una moneda), pero estos métodos precisamente requieren simular el resultado de hacer un proceso aleatorio según una distribución de probabilidad general <img alt="$f(x)$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/7997339883ac20f551e7f35efff0a2b9.svg?invert_in_darkmode" align=middle width="31.88493pt" height="24.56553pt"/>, que podría ser una gaussiana, una distribución de Poisson, una lognormal, una distribución de Weibull o una distrubicón gamma de Euler. Aunque para las más raras tendremos que escribir nuestro código, generar una gaussiana es una operación muy común. A pesar de que [el algoritmo de Box-Muller](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform) parece la solución a todos nuestros problemas en este caso, en general es bastante ineficiente. Escribir algo mejor requiere tiempo. Y no hablemos si queremos una distribución de Poisson.
+Pero  no solo eso: un uso básico suele requerir obtener números a partir de una distribución uniforme (por ejemplo, simular un dado o una moneda), pero estos métodos precisamente requieren simular el resultado de hacer un proceso aleatorio según una distribución de probabilidad general `f(x)`, que podría ser una gaussiana, una distribución de Poisson, una lognormal, una distribución de Weibull o una distrubicón gamma de Euler. Aunque para las más raras tendremos que escribir nuestro código, generar una gaussiana es una operación muy común. A pesar de que [el algoritmo de Box-Muller](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform) parece la solución a todos nuestros problemas en este caso, en general es bastante ineficiente. Escribir algo mejor requiere tiempo. Y no hablemos si queremos una distribución de Poisson.
 
 Por ello, C++ tiene una clase dedicada a generar números aleatorios de calidad, y soporte para las distribuciones más comunes, de forma eficiente. Para ello, primero hacemos `#include<random>`. Después, hacen falta dos cosas: elegir un generador de aleatorios, y una distribución. Para el generador tenemos varias opciones. 
 
 - **El generador por defecto, `default_random_engine` .** A menos que necesitemos "pocos" aleatorios, las correlaciones no sean importante, y la velocidad sea algo a tener muy en cuenta, deberíamos evitarlo.
-- **El Mersenne Twister, `mt19937` : ** tiene un periodo muchísimo más largo (¡de <img alt="$2^{219937}-1$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/ac2068212b0d866be9e119302a4d9987.svg?invert_in_darkmode" align=middle width="76.55769pt" height="26.70657pt"/> dígitos!), y es mucho mejor en los test. Durante bastante tiempo ha sido uno de los estándares en simulación Monte Carlo. Nuevos test estadísticos parecen mostrar que no es *tan* bueno como se pensaba. 
+- **El Mersenne Twister, `mt19937` : ** tiene un periodo muchísimo más largo (¡de `2^219937-1` dígitos!), y es mucho mejor en los test. Durante bastante tiempo ha sido uno de los estándares en simulación Monte Carlo. Nuevos test estadísticos parecen mostrar que no es *tan* bueno como se pensaba. 
 - **El Ranlux, `ranlux48` :**  es el que actualmente utiliza el CERN. A pesar de que no tiene un período tan largo como Mersenne Twister, está basado en un proceso caótico que asegura una decorrelación completa en series largas. Eso sí, es más lento. 
 - **El dispositivo de aleatorios, `random_device`:** este es la sorpresa de la comparativa. `random_device`  no genera pseudoaleatorios, **genera aleatorios de verdad**. Eso sí, depende del hardware de nuestro ordenador, y puede estar temporalmente no disponible. A menudo se usa para dar una semilla a cualquiera de los otros generadores.
 
 Para los ejemplos siguientes usaré `mt19937`. Después de escoger nuestro generador, C++ tiene varias opciones para las distribuciones de probabilidad. Para nosotros, las más importantes son: 
 
-- Reales en el intervalo <img alt="$[a,b]$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/fe477a2781d275b4481790690fccd15f.svg?invert_in_darkmode" align=middle width="32.07237pt" height="24.56553pt"/>: `uniform_real_distribution<double> ran_u(a,b)` 
-- Enteros en el intervalo <img alt="$[n,m]$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/67a04a07c24b1a877a15b6942472a8bc.svg?invert_in_darkmode" align=middle width="40.596435pt" height="24.56553pt"/>: `uniform_int_distribution<double> ran_i(n,m)` 
-- Distribución gaussiana de media <img alt="$\mu$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/07617f9d8fe48b4a7b3f523d6730eef0.svg?invert_in_darkmode" align=middle width="9.86799pt" height="14.10255pt"/> y varianza <img alt="$\sigma ^2$" src="https://rawgit.com/VictorSeven/cursocpp/master/svgs/c2e1c984a3aeba15170f4dda38d721c2.svg?invert_in_darkmode" align=middle width="16.47591pt" height="26.70657pt"/>:  `normal_distribution<double>(mu, sigma)`.
+- Reales en el intervalo `[a,b]`: `uniform_real_distribution<double> ran_u(a,b)` 
+- Enteros en el intervalo `[n,m]`: `uniform_int_distribution<double> ran_i(n,m)` 
+- Distribución gaussiana de media μ  y varianza σ^2:  `normal_distribution<double>(mu, sigma)`.
 
 Hay muchas más (exponenciales, lognormales, Cauchy...), y están todas en las [páginas de referencia](http://www.cplusplus.com/reference/random/). 
 

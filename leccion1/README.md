@@ -11,9 +11,9 @@ A mucha gente le gusta utilizar un único editor con soporte multilenguaje (algu
 Code::Blocks es un programa libre y de código abierto, que podemos descargar gratuitamente.
 
 ### Instalación en Windows
-Vamos a [la página oficial de Code::Blocks](http://www.codeblocks.org/),  y en la sección *Downloads*, pinchamos sobre *Download the binary release*. Aquí aparecen diferentes opciones de descarga. Hay que tener en mente que Code::Blocks es un entorno, y no un compilador. Si descargamos *codeblocks-16.01mingw-setup.exe*, tendremos incluido el compilador GCC. Descargamos esta opción para tener un compilador disponible en caso de problemas, y enseguida intentaremos instalar uno más actualizado.
+Vamos a [la página oficial de Code::Blocks](http://www.codeblocks.org/),  y en la sección *Downloads*, pinchamos sobre *Download the binary release*. Aquí aparecen diferentes opciones de descarga. Hay que tener en mente que Code::Blocks es un entorno, y no un compilador. Si descargamos *codeblocks-16.01mingw-setup.exe*, tendremos incluida una versión para Windows del compilador GCC.
 
-Sin embargo, la versión de GCC ofrecida es bastante antigua, y resulta más conveniente tener una actualizada.  En [nuwen.net](https://nuwen.net/mingw.html) tenemos a nuestra disposición las últimas versiones de GCC. Descargamos *mingw-15.3-without-git.exe*. El siguiente paso es configurar Code::Blocks a nuestro antojo.
+Sin embargo, la versión de GCC ofrecida es bastante antigua, y resulta más conveniente tener una más actualizada.  En [nuwen.net](https://nuwen.net/mingw.html) tenemos a nuestra disposición las últimas versiones de GCC listas para utilizar. Descargamos *mingw-15.3-without-git.exe*. El siguiente paso es configurar Code::Blocks a nuestro antojo.
 
 ### Instalación en Linux
 
@@ -31,7 +31,7 @@ El siguiente paso es configurar Code::Blocks. Básicamente nos interesa configur
 ### Poniendo bonito el entorno
 Vamos a la barra de herramientas y pinchamos en *Settings > Editor...*. Esto nos abre una ventana con muchas opciones. Para nosotros, la más interesante (de momento) está en el icono *Syntax Highlighting*. Al seleccionarlo, muestra un ejemplo de código, y una lista con secciones de C++: palabras clave, preprocesador, números... En este icono básicamente podemos personalizar el estilo de letra y color que debe tener cada cosa.
 
-Sin embargo, editarlo a mano es un poco largo. Code::Blocks contiene ya algunas configuraciones de color predeterminadas,  que debemos incluir por separado. Estas están definidas en un archivo texto (el archivo color_themes.conf que está en este mismo repositorio). Para añadirlas a Code::Blocks:
+Sin embargo, editarlo a mano es un poco largo. Code::Blocks contiene ya algunas configuraciones de color predeterminadas,  que debemos incluir por separado. Estas están definidas en un archivo texto (el archivo `colour_themes.conf` que está en este mismo repositorio). Para añadirlas a Code::Blocks:
 
 > **Windows:** 
 1. Abrir la carpeta de instalación de Code::Blocks. **Cerrar Code::Blocks, si está abierto.**
@@ -50,7 +50,7 @@ Dejo al usuario explorar las opciones que hay para personalizar el entorno. Perm
 ## Configurar el compilador
 Puede que queramos instalar un compilador distinto de GCC, como Clang o Intel, o simplemente tener dos versiones de GCC distintas. En todo caso, hay que indicarle al entorno dónde se encuentra el compilador y cómo debe hacer su trabajo. 
 
-Para ello, vamos a *Settings > Compiler...*. En este caso estamos interesados solo en el icono de *Compiler Settings* que aparece por defecto. Si vamos a la pestaña de *Toolchain executables*, podemos decirle a Code::Blocks en qué carpeta está nuestro compilador. Además, debemos indicar cuál es el ejecutable de los compiladores. En el caso de C++, basta indicar el compilador de C++. 
+Para ello, vamos a *Settings > Compiler...*. En este caso estamos interesados solo en el icono de *Compiler Settings* que aparece por defecto. Si vamos a la pestaña de *Toolchain executables*, podemos decirle a Code::Blocks en qué carpeta está nuestro compilador. Además, debemos indicar cuál es el ejecutable de los compiladores. En el caso de C++, basta indicar el compilador de C++. En el caso de GCC es `g++`. 
 
 En Windows, si hemos descargado la opción que traía MinGW por defecto, está todo configurado. En Linux, Code::Blocks habrá detectado nuestro compilador automáticamente. Si queremos usar otro, basta poner la carpeta y elegir los ejecutables.
 

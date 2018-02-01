@@ -2,7 +2,7 @@
 
 Hasta este punto, hemos instalado y configurado un entorno orientado a trabajar con C++, y hemos repasado los conceptos básicos del lenguaje. El próximo paso es repasar la sintaxis básica de clases, y extenderla para poder sacar partido de las aplicaciones que C++ nos ofrece en programación orientada a objetos.
 
-Como ejemplo, vamos a crear una clase que trabaje con polinomios de grado arbitrario. Para ello, comenzaremos en esta lección con una clase que utiliza polinomios de grado menor o igual que $n$, y la ampliaremos posteriormente usando vectores de la biblioteca estándar para soportar cualquier tamaño.
+Como ejemplo, vamos a crear una clase que trabaje con polinomios de grado arbitrario. Para ello, comenzaremos en esta lección con una clase que utiliza polinomios de grado menor o igual que `n`, y la ampliaremos posteriormente usando vectores de la biblioteca estándar para soportar cualquier tamaño.
 
 ## Comenzando
 
@@ -45,7 +45,7 @@ int main(void)
 
 En el código anterior, la línea `nombre_clase nombre_objeto()` es equivalente a lo que sería un `double nombre_variable`, y es la instancia de un objeto de la clase. Las dos líneas siguientes muestran cómo podemos acceder a los miembros de la clase, mediante un punto. Observa que si intentamos acceder a un miembro privado tendremos un error.
 
-Vamos a comenzar nuestra clase de polinomios.  Si nuestro polinomio tiene grado $n$, entonces se puede escribir como  $p(x)=a_0 +a_1 x+a_2 x^2 \ldots +a_n x^n$. Para almacenarlo, solamente hemos de guardar los coeficientes $a_j$ en un array, de modo que `coeficientes[j]` representa el coeficiente $a_j$. Además, vamos a definir un tamaño máximo para los polinomios, de modo que el usuario no pueda elegir un número demasiado grande. Nuestra clase necesita almacenar, por tanto, un array cuyo tamaño límite `MAX_P_SIZE`, y el grado del polinomio que estamos usando, `n`. El resultado es este: 
+Vamos a comenzar nuestra clase de polinomios.  Si nuestro polinomio tiene grado `n`, entonces se puede escribir como  `p(x)=a_0 + a_1 x + a_2 x^2 + ... + a_n x^n`. Para almacenarlo, solamente hemos de guardar los coeficientes en un array, de modo que `coeficientes[j]` representa el coeficiente `a_j`.  Además, vamos a definir un tamaño máximo para los polinomios, de modo que el usuario no pueda elegir un número demasiado grande. Nuestra clase necesita almacenar, por tanto, un array cuyo tamaño límite `MAX_P_SIZE`, y el grado del polinomio que estamos usando, `n`. El resultado es este: 
 
 ``` c++
 #define MAX_P_SIZE 100
@@ -205,7 +205,7 @@ La primera suele ser una opción más sencilla conceptualmente, Aquí, sin embar
 
 ### Operador `+`
 
-Conceptualmente, nos interesaría que nuestra clase fuera capaz de sumar, restar, multiplicar o dividir polinomios, unos entre otros. Esto se puede hacer implementando una función suma que reciba dos polinomios, y escriba un tercero, por referencia. Sin embargo, sería mucho más conveniente escribir cosas como `s=p+q`, o incluso operar de la forma `s=p1*(p2-p3)`. Para conseguir este objetivo, se emplea la llamada sobrecarga de operadores.
+Conceptualmente, nos interesaría que nuestra clase fuera capaz de sumar, restar, multiplicar o dividir polinomios, unos entre otros. Esto se puede hacer implementando una función suma que reciba dos polinomios, y devuelva un tercero (o que lo escriba por referencia). Sin embargo, sería mucho más conveniente escribir cosas como `s=p+q`, o incluso operar de la forma `s=p1*(p2-p3)`. Para conseguir este objetivo, se emplea la llamada sobrecarga de operadores.
 
 La sobrecarga de un operador se realiza de la siguiente manera:
 
@@ -252,7 +252,7 @@ polinomio polinomio::operator+(const polinomio &other) const
 
 ```
 
-Observa que si un polinomio tiene grado mayor que otro, no pasa nada porque hemos hecho cero todos los coeficientes $a_j$ tales que $j>n$ , en el constructor. Lo que devuelve la suma es un nuevo polinomio, con grado el del polinomio de grado más alto (a menos que el último coeficiente sea 0).  Un detalle es que al ser pasada `other`  como constante, solo podremos usar las funciones `other.get_grado`  y `other.get_coef` , que son las que hemos declarado anteriormente como constantes.
+Observa que si un polinomio tiene grado mayor que otro, no pasa nada porque hemos hecho cero todos los coeficientes `a_j` tales que `j>n` , en el constructor. Lo que devuelve la suma es un nuevo polinomio, con grado el del polinomio de grado más alto (a menos que el último coeficiente sea 0).  Un detalle es que al ser pasada `other`  como constante, solo podremos usar las funciones `other.get_grado`  y `other.get_coef` , que son las que hemos declarado anteriormente como constantes.
 
 Podemos comprobar que la implementación es correcta haciendo algunas sumas de polinomios, por ejemplo:
 
@@ -266,7 +266,17 @@ polinomio w = p + q;
 cout << w.get_grado() << " (" << w.get_coef(0) << ", " << w.get_coef(1) << ", " << w.get_coef(2) << ")" << endl;
 ```
 
-Se deja al lector, como ejercicio, la implementación del resto de los operadores aritméticos. 
+Con esto, hemos ganado la posibilidad de operar de forma natural con los polinomios. Como contra, la función suma devuelve el polinomio por valor, con lo cual se realiza una copia del polinomio a devolver. Lo que hemos ganado en legibilidad, en este caso, se ha perdido en eficiencia. Piensa en un ejemplo como:
+
+```c++
+polinomio q1, q2,q3,q4,q5;
+//Rellenar los polinomios
+q5 = q1 + q2 + q3 + q4 + q5;
+```
+
+En este caso, lo que hace C++ es calcular `q1+q2`, devolver una copia al resultado, y esto sumarlo con `q3`. Después, la copia obtenida la suma con `q4` , y así sucesivamente. Esto quiere decir que esta suma realiza `4n` iteraciones. Si la hiciéramos con un solo bucle sobre los coeficientes, solo gastaríamos `n` iteraciones.  Una solución es la implementación de la llamada **evaluación perezosa**, que evita que se devuelvan copias hasta que no se ha llegado al final de la operación. La implementación de la evaluación perezosa puede llegar a ser complicada. Un ejemplo claro de implementación [se puede consultar aquí](https://stackoverflow.com/a/414418/1600778).
+
+> **Ejercicio:** implementar los operadores `-` y `*`  para un polinomio. La multiplicación debe poder aceptar un escalar también.
 
 ### Operador `+=`
 
@@ -349,7 +359,7 @@ Hasta el momento, hemos visto cómo crear una clase que contenga variables, func
 
 Sin embargo, queremos ahora añadir una nueva funcionalidad: supongamos que deseamos que los coeficientes de mi clase sean enteros únicamente, reales únicamente -o incluso booleanos. En principio, es posible declarar la clase como `double` y usar solo valores enteros, o incluso 0 ó 1, pero esto tiene dos problemas importantes:
 
-1. La posibilidad de que se cometa algún error es muy alta, ya que en los cálculos intermedios que se producen dentro de la clase no redondeamos a entero (ni mucho menos con los booleanos).
+1. La posibilidad de que se cometa algún error es muy alta, ya que en los cálculos intermedios que se producen dentro de la clase no redondeamos a enteros (ni mucho menos con los booleanos).
 2. Estamos gastando mucha memoria (16 bytes para un `double` en lugar de los 2 bytes para un `bool` ) de manera inútil.
 
 Para solucionar esto tenemos las plantillas. Una *plantilla* es una función o clase que funciona de forma diferente según el tipo indicado. Por ejemplo, 
@@ -423,16 +433,17 @@ template polinomio suma(const polinomio& x, const polinomio& y);
 
 De modo que así al llamar  a la función sin ninguna etiqueta lo que tendremos será la aplicación de la suma a dos polinomios.
 
-Una función puede, además, varios tipos diferentes en la plantilla. Por ejemplo, una suma que mezcle dos tipos y devuelva un tercero (esto se puede hacer siempre y cuando hayamos sobrecargado el operador `+`  correspondiente):
+Una función puede tener, además, varios tipos diferentes en la plantilla. Por ejemplo, una suma que mezcle dos tipos y devuelva un tercero (esto se puede hacer siempre y cuando hayamos sobrecargado el operador `+`  correspondiente):
 
 ```c++
 template<class T1, class T2, class T3>
 T3 suma(const T1& x, const T2& y);
 
+//Y si alguno lo usamos mucho, lo podemos atajar...
 template double suma(const int&, const double&);
 ```
 
-Observa que hemos definido también un atajo para las sumas de enteros con decimales, que devuelven decimales.
+Observa que hemos definido también un atajo para las sumas de enteros con decimales, que devuelven decimales. Así, `suma(1, 3.0)` llama directamente al atajo, devolviendo un `double`.
 
 ### Plantillas de clases
 

@@ -7,13 +7,17 @@
 Un programa de C++ tiene una estructura como la siguiente:
 
 ```c++
+//Incluir bibliotecas 
 #include<iostream>
 #include<cstdlib>
 
+//Usar el espacio de nombres
 using namespace std;
 
+//Función principal
 int main(void)
 {
+    //Mostrar por pantalla
     cout << "Hola Mundo" << endl;
     return 0;
 }
@@ -98,7 +102,7 @@ int numero = 0;
 numero += 2; //numero vale 2 
 numero *= 3; //numero vale 6
 ```
-Para las variables de tipo entero tenemos los operador `++` y `--` , que aumentan o disminuyen el valor de la variable en uno:
+Para las variables de tipo entero tenemos los operadores  `++` y `--` , que aumentan o disminuyen el valor de la variable en uno:
 
 
 ``` c++
@@ -255,6 +259,22 @@ else cout << "d1 no es positivo" << endl;
 ```
 Podemos encadenar tantos `else if` como sean necesarios, permitiendo estructuras relativamente complicadas.
 
+Una operación tremendamente usual es la de asignar a una variable un valor u otro dependiendo de una condición. Para realizar esta operación en concreto, existe una sintaxis especial que permite hacer más corto y legible el código:
+
+``` c++
+double d1;
+double resultado;
+
+cin >> d1;
+
+//Este código...
+if (d1 > 0)  resultado = 5;
+else resultado = -3;
+
+//...es equivalente a este línea:
+resultado = d1 > 0 ? 5 : -3;
+```
+
 ## Bucles
 
 Muy frecuentemente queremos ejecutar una instrucción muchas veces seguidas, especialmente, en combinación con los *arrays*, como veremos enseguida.  Para ello, tenemos los bucles. 
@@ -367,7 +387,7 @@ Es claro que trabajar con tablas más alla de 3D tiene unos requerimientos muy a
 
 ## Funciones
 
-Finalmente, vamos a repasar la estructura de las funciones en C++.  Una función es un trozo de código que vive fuera de la función principal `main`, y que puede ser llamada cuantas veces queramos para ejecutar ese pequeño trozo de código, sin andar copiando, pegando y/o modificando. Por ejemplo, supongamos que yo le doy una variable a la función, y quiero calcular como resultado un polinomio de segundo grado, $q(x)=x^2-x+2$. Entonces, puedo definir
+Finalmente, vamos a repasar la estructura de las funciones en C++.  Una función es un trozo de código que vive fuera de la función principal `main`, y que puede ser llamada cuantas veces queramos para ejecutar ese pequeño trozo de código, sin andar copiando, pegando y/o modificando. Por ejemplo, supongamos que yo le doy una variable a la función, y quiero calcular como resultado un polinomio de segundo grado, `q(x)=x^2-x+2`. Entonces, puedo definir
 
 ``` c++
 double qx(double x)
@@ -410,7 +430,7 @@ void suma2(double x, double y)
 }
 ```
 
-La función siempre mostrará `1.0` independientemente del valor que le demos.  Pero no es capaz de cambiar el valor de sus argumentos fuera de la función, es decir, el programa
+La función siempre mostrará `1.0` independientemente del valor que le demos.  Sin embargo no es capaz de cambiar el valor de sus argumentos fuera de la función. Pongamos el siguiente programa,
 
 ``` c++
 double x = 5.0;
@@ -418,7 +438,7 @@ double y = -1.0;
 suma2(x,y);
 cout << x << " " << y << endl;
 ```
-muestra la siguiente salida:
+que, al ejecutarlo, muestra la salida:
 
 	1.0
 	5.0  -1.0
@@ -542,7 +562,7 @@ int main(void)
 }
 ```
 
-Si la función está escrita debajo, e intentamos ejecutar el código el compilador nos dirá que no reconoce `suma` .  Esto es aplicable a cualquier otra función (digamos que se llama `usa_suma` que utilice `suma` . Si `suma`  está debajo de `usa_suma` , el compilador nos dirá que `suma`  no está aún definido. Una opción para arreglar este problema es *declarar* la funciones al principio. De esta forma, C++ reconoce que las funciones existen, y podemos escribirlas en cualquier parte del código. El ejemplo anterior quedaría así:
+Si la función está escrita debajo, e intentamos ejecutar el código el compilador nos dirá que no reconoce `suma` .   Si la función `usa_suma` llama en algún momento a la función `suma` , pero `suma`  está debajo de `usa_suma` , el compilador nos dará un error porque la función `suma`  no está definida. Una opción para arreglar este problema es *declarar* la funciones al principio. De esta forma, C++ reconoce que las funciones existen, y podemos escribirlas en cualquier parte del código. El ejemplo anterior quedaría así:
 
 ```c++
 #include<iostream>
@@ -643,7 +663,7 @@ fichero.close(); //Cierra el fichero
 
 La directiva `open` abre el fichero que queremos (y si no existe, se crea), y todo lo que se escriba irá a este fichero. Tenemos que acordarnos siempre de cerrar los ficheros, porque si no podrían quedar abiertos tras la ejecución del programa, resultando en errores al intentar trabajar de nuevo con ellos. **Es buena práctica escribir el `close`  nada más terminar de escribir el `open`, para que no se nos olvide.**
 
-Una vez cerrado, podemos abrir otro fichero distinto (o el mismo) para continuar escribiendo. Es posible tener varios `oftream` trabajando al mismo tiempo, escribiendo varios ficheros. No obstante, hay que recordar que escribir en disco es una operación relativamente lenta, y en muchas ocasiones es la que ocupará un porcentaje importante del tiempo de ejecución del programa. A la hora de hacer simulaciones, debemos tener cuidado de seleccionar bien qué escribimos y reducir el número de datos al mínimo para acelerar el programa. Por ejemplo, el siguiente programa que calcula una trayectoria de un objeto:
+Una vez cerrado, podemos abrir otro fichero distinto (o el mismo) para continuar escribiendo. Es posible tener varios `ofstream` trabajando al mismo tiempo, escribiendo varios ficheros. No obstante, hay que recordar que escribir en disco es una operación relativamente lenta, y en muchas ocasiones es la que ocupará un porcentaje importante del tiempo de ejecución del programa. A la hora de hacer simulaciones, debemos tener cuidado de seleccionar bien qué escribimos y reducir el número de datos al mínimo para acelerar el programa. Por ejemplo, el siguiente programa que calcula una trayectoria de un objeto:
 
 ```c++
 ofstream output;

@@ -4,11 +4,12 @@ Ya tenemos todos los elementos que podemos necesitar para mejorar nuestro códig
 
 ## Optimización desde el compilador
 
-Buena parte del trabajo de optimización la puede hacer el compilador por nosotros. Veamos, para empezar, cómo compilar un programa desde la consola. Esto se hace de la siguiente manera:
+Buena parte del trabajo de optimización la puede hacer el compilador por nosotros. Veamos, para empezar, cómo compilar un programa desde la consola. Una vez abrimos la consola, podemos hacerlo con el siguiente comando:
 
 ```c++
 g++ nombre_programa.cpp -o nombre_ejecutable
 ```
+> En Windows, es necesario que el programa g++ esté añadido al PATH del para invocarlo desde cualquier ubicación. Otra opción es ir a la carpeta donde está MinGW, y buscar el ejecutable (que se encontrará dentro de una carpeta `bin`. Luego se podrá ejecutar como `C:\ruta_de_MinGW\bin\g++` .
 
 Como hemos comentado en tutoriales anteriores, conviene poder utilizar el estándar C++11. Para ello, 
 
@@ -48,7 +49,7 @@ gdb a.out
 
 La consola cambia para decirnos que estamos en `gdb`.  Para comenzar una depuración desde el principio, tecleamos `start`. Esto ejecuta la primera orden del `main` . Depurar estrictamente desde la consola es complicado, así que tenemos dos opciones:
 
-1. Si mantenemos pulsado `Ctrl+x` y luego la tecla `a` , `gdb`  cambia para mostrar nuestro código, señalando en qué línea está. Este modo es el más cómodo. Sin embargo, a veces tiene algunos errores.
+1. Si mantenemos pulsado `Ctrl+x` y luego la tecla `a` , `gdb`  cambia para mostrar nuestro código, señalando en qué línea está. Este modo es el más cómodo. Sin embargo, tiene algunos *bugs*.
 2.  El más seguro, ir avanzando con `gdb` en la consola mirando nuestro código en el editor. Debemos tener cuidado, eso sí, de que estar donde pensamos que estamos. El comando `frame`  nos dice qué línea está ejecutando el depurador.
 
 Para movernos con el depurador, escribimos `next` para avanzar a la siguiente instrucción. Ten en cuenta que si nuestra instrucción es la llamada a una función, `gdb`  ejecutará toda la función sin entrar en ella, saltando a lo siguiente. Si queremos entrar, debemos usar `step` . Cuidado con `step` , para no entrar dentro del código de bibliotecas que estemos usando. No hay ningún problema, pero nos hará perder el tiempo.
@@ -73,6 +74,18 @@ info locals
 ```
 
 Una vez hayamos encontrado el error de nuestro código, bastará con escribir `quit`  para salir del depurador. Nos preguntará si queremos cerrar el proceso, a lo cual decimos que sí.
+
+### Valgrind
+
+El programa **Valgrind**, que se instala con Code::Blocks, es una aplicación que nos ayuda a buscar errores de memoria y los sitios donde nuestro ordenador pasa más tiempo ejecutando, es decir, los cuellos de botella del programa.
+
+Basta compilar el programa completo y luego ejecutar el comando `valgrind ./miprograma`  para ejecutar Valgrind. La información que da suele ser bastante oscura, pero da pistas útiles sobre los puntos en los que estamos haciendo una operación ilegal con la memoria. Es muy útil cuando estamos teniendo problemas con los códigos que devuelven referencias inválidas, por ejemplo. 
+
+De hecho, es útil como prueba pasar Valgrind a programas que *aparentemente* funcionan. Te sorprenderá ver que algunos de ellos tienen errores... que podrían estar afectando a los resultados.
+
+Para el caso de encontrar cuellos de botella, podemos ejecutar `valgrind --tool=callgrind ./miprograma`. 
+
+Se puede encontrar más información en [su web](http://valgrind.org/).
 
 
 ## Algunos trucos para optimizar
@@ -173,7 +186,7 @@ for (i=0; i < 10000000; i++) v[i] = i;
 
 Cuando queremos borrar un elemeto en una posición arbitraria, usualmente utilizamos `erase` sin echarle más cuentas. Sin embargo, esta función es muy lenta: elimina el elemento en la posición `j` , y luego coge el `j+1`  y lo pone en `j` , el `j+2`  lo pone en `j+1` , hasta que llega al final. En un vector de un millón elementos, en el que eliminamos los elementos 500.000, 500.001, y 500.002,  tenemos por debajo un millón y medio de iteraciones. Supongamos que esto va dentro de un bucle que se ejecuta miles de veces. 
 
-La moraleja, igual que pasaba con `sqrt` , es que hay  para optimizar hay que saber más o menos cómo funciona la librería que estoy utilizando. `erase`  es buena opción para eliminar un elemento si no queremos alterar el orden del vector. Sin embargo,  a menudo el orden en el que están guardados los elementos en el vector me es indiferente. Con lo cual, podemos escribir:
+La moraleja, igual que pasaba con `sqrt` , es que hay  para optimizar hay que saber más o menos cómo funciona la biblioteca que estamos  utilizando. `erase`  es la mejor opción para eliminar un elemento **si no queremos alterar el orden del vector.** Sin embargo,  a menudo el orden en el que están guardados los elementos en el vector me es indiferente. Con lo cual, podemos escribir:
 
 ```c++
 template<class T>
@@ -207,7 +220,7 @@ for (x=a; x < b; x += dx)
 }
 ```
 
-El número de iteraciones que hagamos será igual a `N` . Si nuestra función tarda un segundo, y tenemos que calcularla dos veces por cada iteración, necesitamos `2N`  segundos, que media hora. Para `N=10000`, 5 horas. Una forma de mejorar el código es la siguiente:
+El número de iteraciones que hagamos será igual a `N` . Si nuestra función tarda un segundo, y tenemos que calcularla dos veces por cada iteración, necesitamos `2N`  segundos, que para `N=1000`, son media hora. Para `N=10000`, 5 horas. Una forma de mejorar el código es la siguiente:
 
 
 ```c++
@@ -225,9 +238,9 @@ for (x=a; x < b; x += dx)
 }
 ```
 
-Como al paso siguiente `f(x)` es la `f(x+dx)` el anterior, podemos guardarla en memoria para el siguiente paso, y evitar calcularla dos veces. Esto reduce el tiempo efectivamente a la mitad, es decir, 15 minutos o dos horas y media, dependiendo de `N`. Esta es una optimización muy importante. En métodos de integración más avanzados, que llamen 3, 4, o 5 veces a `f(x)`, se vuelve cada vez más y más importante.
+Como al paso siguiente `f(x)` es la `f(x+dx)` del anterior, podemos guardarla en memoria para el siguiente paso, y evitar calcularla dos veces. Esto reduce el tiempo efectivamente a la mitad, es decir, 15 minutos o dos horas y media, dependiendo de `N`. Esta es una optimización muy importante. En métodos de integración más avanzados, que llamen 3, 4, o 5 veces a `f(x)`, se vuelve cada vez más y más importante.
 
-A veces, sin embargo, esto no es suficiente porque `N` es muy grande,  o porque hacemos muchas integraciones en diferentes intervalos `[a,b]`, o cualquier otro motivo. Entonces, puede ser interesante escribir la función en una tabla discreta. Así, el vector `tabla[j]`  contiene `f(x0 + h * j)` .  La pregunta es cómo obtener cualquier `f(x)` , que probablemente no estará en la tabla. Sin embargo, si hemos hecho suficientes divisiones, una interpolación lineal será una buena aproximación:
+A veces, sin embargo, esto no es suficiente porque `N` es muy grande,  o porque hacemos muchas integraciones en diferentes intervalos `[a,b]`, o cualquier otro motivo. Entonces, puede ser interesante escribir la función en una tabla discreta. Así, el vector `tabla[j]`  contiene el valor de la funcióln `f(x0 + h * j)` .  La pregunta es cómo obtener cualquier `f(x)` , que probablemente no estará en la tabla. Sin embargo, si hemos hecho suficientes divisiones, una interpolación lineal será una buena aproximación:
 
 ```c++
 double aux_f(double x, double dx, vector<double>& tabla)

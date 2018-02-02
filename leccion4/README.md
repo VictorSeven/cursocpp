@@ -17,7 +17,7 @@ En algunos compiladores antiguos C++11 podría no estar disponible. Podemos prob
 
 ## Complejos: clase `complex` 
 
-C++ tiene una clase ya preparada para trabajar con números complejos de forma sencilla. Para crear números complejos, hacemos
+C++ tiene una clase ya preparada para trabajar con números complejos de forma sencilla. Si queremos utilizarla, solo debemos añadir el encabezado `#include<complex>`. Para crear números complejos, hacemos
 
 ``` c++
 complex<double> cd(1.5, 2.0); //1.5 + 2.0i
@@ -42,13 +42,12 @@ cout << sin(c2) << endl;
 cout << log(c1) << endl;
 ```
 
-De estas operaciones, es interesante la línea marcada `//*` , ya que en ella podemos ver una operación que involucra un `double`  (el número `2.0`) con un complejo. Esto no da error y puede hacerse. Sin embargo, un entero sí daría error. Es posible multiplicar complejos de un tipo por números de su mismo tipo, pero sin mezclar. Del resto, lo que más llama la atención es el hecho de que C++ pueda trabajar 
+De estas operaciones, es interesante la línea marcada `//*` , ya que en ella podemos ver una operación que involucra un `double`  (el número `2.0`) con un complejo. Esto no da error y puede hacerse. Sin embargo, un entero sí daría error. Es posible multiplicar complejos de un tipo por números de su mismo tipo, pero sin mezclar. Del resto, lo que más llama la atención es el hecho de que C++ pueda trabajar con funciones como senos o logaritmos empleando los números complejos.
 
-La librería de compejos permite, por ejemplo, escribir fácilmente una versión chapucera (pero funcional) de [una transformada discreta de Fourier](https://en.wikipedia.org/wiki/Discrete_Fourier_transform#Definition).
-
-Para `k=0,1,...,N-1`. Con la biblioteca de complejos, esto se puede trasladar directamente a código de una forma sencilla:
+La biblioteca de compejos permite, por ejemplo, escribir fácilmente una versión chapucera (pero funcional) de [una transformada discreta de Fourier](https://en.wikipedia.org/wiki/Discrete_Fourier_transform#Definition):
 
 ```c++
+//Calcula la transformada de Fourier de xn en la frecuencia w
 complex<double> xw(const double xn[100], const int w)
 {
     complex<double> suma(0.0, 0.0); //Almacenar suma
@@ -107,10 +106,10 @@ El comentario importante es la aparición de la función `abs`, que devuelve el 
 
 Hasta ahora hemos usado arrays estáticos. Aunque para empezar están bien, tiene una desventaja importante:  El tamaño del array debe conocerse al compilar el código. No podemos establecerlo a partir de una variable. En una clase, puede establecerse como un parámetro usando una plantilla, pero una vez declarado el objeto, es inmutable. Cuando sabemos que un array va a tener exactamente 100 elementos, no hay problema. Pero con tamaños variables, tenemos que empezar a hacer malabares.
 
-Miremos el ejemplo de `polinomio` : debemos seleccionar un tamaño máximo para tener cuidado con el usuario. Además, tenemos un array con 100 elementos de los cuales probablemente estamos desaprovechando la mayor parte. Para empezar, esto ocupa muchísima más memoria. Y en términos de eficiencia es un problema: si un polinomio tiene grado 2, y lo sumamos con otro de grado 2, estamos sumando 98 ceros.  
-Podemos arreglarlo usando un parámetro de plantilla, pero esto no obliga a ser muy cuidadosos con los índices y añadir una buena cantidad de `if` . Operadores como `+=`  serían muy complicados de implementar, ya que estos pueden cambiar el grado del polinomio (que hemos seleccionado como inmutable).
+Miremos el ejemplo de `polinomio` : debemos seleccionar un tamaño máximo para tener cuidado con el usuario. Además, tenemos un array con 100 elementos de los cuales estamos desaprovechando la mayor parte. Para empezar, esto ocupa muchísima más memoria. Y en términos de eficiencia es un problema: si un polinomio tiene grado 2, y lo sumamos con otro de grado 2, estamos sumando 98 ceros.  
+Podemos arreglarlo usando un parámetro de plantilla, pero esto nos obliga a ser muy cuidadosos con los índices y añadir una buena cantidad de `if` . Operadores como `+=`  serían muy complicados de implementar, ya que estos pueden cambiar el grado del polinomio (que hemos seleccionado como inmutable).
 
-Una buena solución sería tener un array, el cual podamos decidir qué tamaño tiene en cualquier momento, y poner y quitar elementos a nuestro antojo. Para hacer esto, en C estándar se reservaba el tamaño de la memoria a mano, con punteros, y se iba seleccionando qué trocito de memoria asigno a qué variable. Aunque este procedimiento es posible aún en C++, desde mi punto de vista no es recomendable para el cálculo numérico (habitualmente): hay grandes posibilidades de equivocarse, y los errores son difíciles de detectar. Para hacer esto de forma sencilla, tenemos la clase `vector` . Esta nos permite declarar un vector con la siguiente sintaxis:
+Una buena solución sería poder decidir qué tamaño tiene el array en cualquier momento, y poner y quitar elementos a nuestro antojo. Para hacer esto, en C estándar se reservaba el tamaño de la memoria a mano, con punteros, y se iba seleccionando qué trocito de memoria asigno a qué variable. Aunque este procedimiento es posible aún en C++, desde mi punto de vista no es recomendable para el cálculo numérico (habitualmente): hay grandes posibilidades de equivocarse, y los errores son difíciles de detectar (como contrapartida, en ocasiones permite hacer optimizaciones que no son posibles de otra manera). Para hacer esto de forma sencilla, tenemos la clase `vector` . Esta nos permite declarar un vector con la siguiente sintaxis:
 
 ```c++
 #include<vector> //añadir la cabecera correspondiente
@@ -121,7 +120,7 @@ vector<tipo> nombre2(n); //Vector con tamaño inicial n
 vector<tipo> nombre3(n, valor_inicial); //Tamaño inicial, cada elemento iniciado a valor_inicial.
 ```
 
-A la hora de iniciar vectores, si no sabemos el tamaño inicial, podemos emplear el primer constructor. **Si lo conocemos, por defecto, usaremos el segundo constructor. Nunca usaremos el tercero a menos que nuestra aplicación concreta requiera inicializar los valores. ** Recuerda que aunque no lo veas, esa inicialización requiere un bucle sobre cada elemento.
+A la hora de iniciar vectores, si no sabemos el tamaño inicial, podemos emplear el primer constructor. **Si lo conocemos, por defecto, usaremos el segundo constructor. Nunca usaremos el tercero a menos que nuestra aplicación concreta requiera inicializar los valores.** Recuerda que aunque no lo veas, esa inicialización requiere un bucle sobre cada elemento.
 
 Observa que `vector`  no es más que una plantilla de una clase, que tiene tres constructores definidos, según lo que queramos hacer.  `vector`  tiene además sobrecargado el operador corchete:
 
@@ -145,9 +144,9 @@ cout << sizeof(v1) << " " << sizeof(v2) << endl;
 
 Veamos ahora las funciones que tiene un vector. Las más importantes son:
 
-- `size()`: devuelve el tamaño actual del vector.
+- `size()`: devuelve el número de elementos del vector.
 - `push_back(elemento)` : agrega un nuevo `elemento` al vector, por el final.
-- `pop_back()` : elimina el último elemento del vector
+- `pop_back()` : elimina el último elemento del vector.
 - `insert(iterador, elemento)` : inserta un nuevo elemento en la posicion `iterador` .
 - `erase(iterador)` : elimina un elemento en la posición `iterador` .
 - `clear()`: elimina todo lo que hay en el vector.
@@ -184,15 +183,15 @@ void calcular_primos(const int nmax)
 }
 ```
 
-Este código simplemente va guardando los números primos que vamos encontrando en un vector, y, al final, los muestra. Este código se podría hacer muy fácilmente con arrays, añadiendo otra variable más para contar cuántos primos llevamos. El problema es que hay que saber, con antelación, cuál es el número de primos al que vamos a llegar, y poner esta cota, que dejará algunos elemntos vacíos (gastando más memoria).
+Este código simplemente va guardando los números primos que vamos encontrando en un vector, y, al final, los muestra. Este código se podría hacer muy fácilmente con arrays, añadiendo otra variable más para contar cuántos primos llevamos. El problema es que hay que saber, con antelación, cuál es el número de primos al que vamos a llegar, y poner esta cota, que dejará algunos elementos vacíos (gastando más memoria).
 
-La ventaja es que irá algo más rápido. **Cuando llamamos a un método que cambia el tamaño del vector, como `push_back`  o `erase` , hay que reservar más espacio para los datos. Esta operación es lenta. Debemos reducir siempre al máximo los cambios de tamño de vector.** Conste decir que un vector al que nunca le cambiamos el tamaño es igual de rápido que un array.
+La ventaja es que irá algo más rápido. **Cuando llamamos a un método que cambia el tamaño del vector, como `push_back`  o `erase` , hay que reservar más espacio para los datos. Esta operación es lenta. Debemos reducir siempre al máximo los cambios de tamaño de vector.** Conste decir que un vector al que nunca le cambiamos el tamaño es igual de rápido que un array.
 
 Aunque cambiar todos los vectores por arrays sería más rápido, en algunos algoritmos se gana muchísimo más añadiendo y quitando que haciendo malabares con un array estático, y se hace todo mucho más fácil de programar. Además, ocupa menos memoria. Es decisión del programador qué utilizar. **En caso de duda, usa siempre un vector: si no le cambias el tamaño es igual de rápido, no tiene límite a la cantidad de elementos que le quieras meter, y si en algún momento cambias de opinión y necesitas memoria dinámica, será más fácil cambiarlo.** 
 
 ### Borrar o insertar
 
-Los métodos `erase` e `insert`  esperan un objeto de tipo `iterator`  como argumento. Antes, habíamos dicho que en C había que referirse a la memoria manualmente. Los vectores, en el fondo, están haciendo esto, y hay que señalar el trocito de memoria correcto. Los iteradores son unos objetos que encargan de hacer esto sin tener que preocuparnos demasiado y de una forma segura.
+Los métodos `erase` e `insert`  esperan un objeto de tipo `iterator`  como argumento. Antes, habíamos dicho que en C había que referirse a la memoria manualmente. Los vectores, en el fondo, están haciendo esto, y hay que señalar el trocito de memoria correcto. Los iteradores son unos objetos que encargan de apuntar a la posición de memoria correcta sin tener que preocuparnos demasiado y de una forma segura.
 
 El trozo de memoria donde empieza un vector se puede obtener con `vector.begin()` , y donde acaba, con `vector.end()` . Un iterador, además, tiene sobrecargada la suma con números enteros. Así, para borrar un elemento, podemos llamar a:
 
@@ -254,21 +253,21 @@ Por tanto, en general, es mejor pasar los vectores por referencia siempre.
 
 A menudo, en nuestros programas necesitaremos generar números aleatorios. Como probablemente ya sabes, un ordenador no puede generar números realmente aleatorios, sino solamente *pseudoaleatorios*: es una serie determinista que es indiferenciable de una serie aleatoria... siempre y cuando no excedas su periodo. 
 
-En C++, habitualment se usa `rand()`  para obtener estos números. Aunque para algunas aplicaciones está bien, `rand`  emplea un generador de aleatorios llamado lineal congruente. La serie tiene "solo" 2.147.483.647 números diferentes. Aunque dos mil millones (`~10^9`)  de aleatorios puedan parecer bastantes, para aplicaciones específicas se quedan muy cortos. Los métodos Monte Carlo, usados muy comúnmente en física estadística, física de partículas, o para integrales en muchas dimensiones, pueden exceder fácilmente esta cifra. Además, la calidad del generador no es precisamente la mejor.
+En C++, habitualment se usa `rand()`  para obtener estos números. Aunque para algunas aplicaciones está bien, `rand`  emplea un generador de aleatorios llamado lineal congruente. La serie tiene "solo" 2.147.483.647 números diferentes. Aunque dos mil millones (`~10^9`)  de aleatorios puedan parecer bastantes, para aplicaciones específicas se quedan muy cortos. Los métodos Monte Carlo, usados muy comúnmente en física estadística, física de partículas, o para integrales en muchas dimensiones, pueden exceder fácilmente esta cifra. Además, la calidad del generador no es precisamente la mejor: varias pruebas no demasiado complicadas muestras que el generador tiene bastantes correlaciones entre los números -lo cual no es una propiedad deseable.
 
-Pero  no solo eso: un uso básico suele requerir obtener números a partir de una distribución uniforme (por ejemplo, simular un dado o una moneda), pero estos métodos precisamente requieren simular el resultado de hacer un proceso aleatorio según una distribución de probabilidad general `f(x)`, que podría ser una gaussiana, una distribución de Poisson, una lognormal, una distribución de Weibull o una distrubicón gamma de Euler. Aunque para las más raras tendremos que escribir nuestro código, generar una gaussiana es una operación muy común. A pesar de que [el algoritmo de Box-Muller](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform) parece la solución a todos nuestros problemas en este caso, en general es bastante ineficiente. Escribir algo mejor requiere tiempo. Y no hablemos si queremos una distribución de Poisson.
+Pero  no solo eso: un uso básico suele requerir obtener números a partir de una distribución uniforme (por ejemplo, simular un dado o una moneda), pero estos métodos precisamente requieren simular el resultado de hacer un proceso aleatorio según una distribución de probabilidad general `f(x)`, que podría ser una gaussiana, una distribución de Poisson, una lognormal, una distribución de Weibull o una distrubicón gamma de Euler. Aunque para las más raras tendremos que escribir nuestro código, generar una gaussiana es una operación muy común. A pesar de que [el algoritmo de Box-Muller](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform) parece la solución a todos nuestros problemas en este caso, en general es bastante ineficiente. Escribir algo mejor requiere tiempo. Y no hablemos si queremos una distribución lognormal.
 
 Por ello, C++ tiene una clase dedicada a generar números aleatorios de calidad, y soporte para las distribuciones más comunes, de forma eficiente. Para ello, primero hacemos `#include<random>`. Después, hacen falta dos cosas: elegir un generador de aleatorios, y una distribución. Para el generador tenemos varias opciones. 
 
-- **El generador por defecto, `default_random_engine` .** A menos que necesitemos "pocos" aleatorios, las correlaciones no sean importante, y la velocidad sea algo a tener muy en cuenta, deberíamos evitarlo.
-- **El Mersenne Twister, `mt19937` : ** tiene un periodo muchísimo más largo (¡de `2^219937-1` dígitos!), y es mucho mejor en los test. Durante bastante tiempo ha sido uno de los estándares en simulación Monte Carlo. Nuevos test estadísticos parecen mostrar que no es *tan* bueno como se pensaba. 
+- **El generador por defecto, `default_random_engine`.**  De una calidad más que dudosa, deberíamos evitarlo a toda costa.
+- **El Mersenne Twister, `mt19937` :**  tiene un periodo muchísimo más largo (¡de `2^219937-1` dígitos!), y es mucho mejor en los test. Durante bastante tiempo ha sido uno de los estándares en simulación Monte Carlo. Nuevos test estadísticos parecen mostrar que no es *tan* bueno como se pensaba. 
 - **El Ranlux, `ranlux48` :**  es el que actualmente utiliza el CERN. A pesar de que no tiene un período tan largo como Mersenne Twister, está basado en un proceso caótico que asegura una decorrelación completa en series largas. Eso sí, es más lento. 
 - **El dispositivo de aleatorios, `random_device`:** este es la sorpresa de la comparativa. `random_device`  no genera pseudoaleatorios, **genera aleatorios de verdad**. Eso sí, depende del hardware de nuestro ordenador, y puede estar temporalmente no disponible. A menudo se usa para dar una semilla a cualquiera de los otros generadores.
 
 Para los ejemplos siguientes usaré `mt19937`. Después de escoger nuestro generador, C++ tiene varias opciones para las distribuciones de probabilidad. Para nosotros, las más importantes son: 
 
 - Reales en el intervalo `[a,b]`: `uniform_real_distribution<double> ran_u(a,b)` 
-- Enteros en el intervalo `[n,m]`: `uniform_int_distribution<double> ran_i(n,m)` 
+- Enteros en el intervalo `[n,m]`: `uniform_int_distribution<int> ran_i(n,m)` 
 - Distribución gaussiana de media μ  y varianza σ^2:  `normal_distribution<double>(mu, sigma)`.
 
 Hay muchas más (exponenciales, lognormales, Cauchy...), y están todas en las [páginas de referencia](http://www.cplusplus.com/reference/random/). 
@@ -284,6 +283,6 @@ cout << "Diez números aleatorios:" << endl;
 for (i=0; i < 10; i++) cout << ran_u(gen) << " ";
 ```
 
-donde el número `1234567892` es la semilla inicial de la serie. A menudo, se recomienda usar el tiempo del sistema como semilla. En cálculo cientifico, no es buena idea, ya que imposibilita reproducir exactamente un resultado. ** Usar siempre la misma semilla ayuda a detectar más fácilmente errores en los programas, ya que siempre hacen lo mismo, y dan los mismos resultados.**  
+donde el número `1234567892` es la semilla inicial de la serie. A menudo, se recomienda usar el tiempo del sistema como semilla. En cálculo cientifico, no es buena idea, ya que imposibilita reproducir exactamente un resultado. **Usar siempre la misma semilla permite que el resultado de un programa sea siempre el mismo, a pesar de la aleatoriedad. Eso hace más sencillo encontrar errores y reproducir resultados anteriores.**  
 
 El generador de aleatorios debe declararse siempre en el `main`  y pasarse por referencia a los métodos (o emplearlo incluso como variable global), porque si no la serie de aleatorios empezará desde el principio cada vez que llamamemos a la función, creando correlaciones importantes.

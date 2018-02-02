@@ -1,8 +1,8 @@
 ﻿# Día 6: la biblioteca Eigen
 
-Saber hacer clases para los módulos de código que podamos necesitar está muy. Además, nos permite entender cómo funcionan los objetos de la STL, así como otras bibliotecas de C++. 
+Saber hacer clases para los módulos de código que podamos necesitar es muy útil.  Además, nos permite entender cómo funcionan los objetos de la STL, así como otras bibliotecas de C++.  En esta última lección, por el contrario, trabajaremos sobre una biblioteca existente.
 
-A menudo, lo que necesitamos es operar de forma eficiente con álgebra lineal: operaciones con matrices, diagonalización, resolución de sistemas lineales, etc. Aunque tenemos herramientas para hacer esto nosotros mismos, existen ya bibliotecas que se ocupan de esto y que han sido trabajadas por muchos años: BLAS/LAPACK y ARPACK son unos ejemplo. Las primeras están pensadas para el trabajo con matrices y vectores de forma eficiente, mientras que ARPACK está especializada en el cálculo de autovectores y autovalores para matrices de gran tamaño.  Están escritas en Fortran, aprovechando que este lenguaje se diseñó teniendo en cuenta esta aplicación.
+A menudo, lo que necesitamos es operar de forma eficiente con álgebra lineal: operaciones con matrices, diagonalización, resolución de sistemas lineales, etc. Aunque tenemos herramientas para hacer esto nosotros mismos, existen ya bibliotecas que se ocupan de esto y que han sido trabajadas por muchos años: BLAS/LAPACK y ARPACK son unos ejemplos. Las primeras están pensadas para el trabajo con matrices y vectores de forma eficiente, mientras que ARPACK está especializada en el cálculo de autovectores y autovalores para matrices de gran tamaño.  Están escritas en Fortran, aprovechando que este lenguaje se diseñó teniendo en cuenta esta aplicación.
 
 La mayor parte de las bibliotecas actuales que hacen álgebra lineal,  en realidad, son *wrappers* a estas. Las rutinas de `numpy.linalg`, por ejemplo, son llamadas a estas funciones. **Eigen** , aunque no depende directamente de estas bibliotecas,  sí es compatible con ellas y puede ser configurada para realizar los cálculos vía BLAS/LAPACK. 
 
@@ -80,6 +80,7 @@ MatrixXd a(2,2);
 MatrixXd b(3,4);
 a = b;
 
+//Shows 3 4 12:
 cout << a.rows() << " " << a.cols() << " " << a.size() << endl;
 ```
 
@@ -92,7 +93,7 @@ MatrixXd m(3,3);
 VectorXd v(3);
 
 //Rellenar cosas...
-
+//Hacer algunas cuentas
 cout << m.transpose() + m << endl;
 cout << m * v << endl;
 cout << 2.0 * m + (m * m) << endl;
@@ -102,9 +103,8 @@ cout << v.cross(v) << endl; //Producto vectorial
 
 Observa que el el producto por escalares está sobrecargado también, de modo que `2.0*m`  es una operación válida.
 
-> En Eigen,  todas las operaciones están optimizadas mediante técnicas avanzadas como evaluación perezosa, que permite evaluar cosas como `a+b+c` sin realizar ninguna copia. 
-> Recuerda que nuestro operador `+`, cuando lo implementamos, calculaba `a+b`  y devolía un objeto. Si había otro término después, esto al final implica hacer copias al final de cada suma. Eigen sigue un procedimiento más complicado para evitar estos problemas.
-> Sigue habiendo una copia al finalizar la operación, que podemos evitar con `no_alias()`  si estamos seguros de no tener aliasing. Para más detalles, consulta la documentación de Eigen.
+> En Eigen,  todas las operaciones están optimizadas mediante técnicas  como evaluación perezosa, que permite evaluar cosas como `a+b+c` sin realizar ninguna copia. 
+> En algunas ocaciones la evaluación perezosa no es una buena idea. Eigen escoge automáticamente el mejor procedimiento para realizar las operaciones, pero podemos exigirle que lo haga manualmente.  Para más detalles, consulta [la documentación de Eigen](https://eigen.tuxfamily.org/dox/TopicLazyEvaluation.html).
 
 Además, Eigen permite calcular la suma y la media de los elementos de la matriz o vector, máximo, mínimo, o parámetros como la traza:
 
@@ -119,17 +119,19 @@ cout << m.minCoeff() << endl;
 cout << m.trace() << endl;
 ```
 
-Finalmente, tenemos la posibilidad de calcular determinantes, inversas, o autovalores de la matriz, así como diversas descomposiciones y sistemas de ecuaciones.  La lista completa está en la página de Eigen.
+Finalmente, tenemos la posibilidad de calcular determinantes, inversas, o autovalores de la matriz, así como diversas descomposiciones y sistemas de ecuaciones.  La lista completa está en [la documentación de Eigen](https://eigen.tuxfamily.org/dox/group__DenseLinearSolvers__chapter.html).
 
 Nosotros, como ejemplo, vamos a obtener autovalores. Eigen tiene diversas formas de trabajar dependiendo de nuestra matriz. Si es autoadjunta, lo mejor es usar `SelfAdjointEigenSolver`.  Es importante asegurarse de que nuestra matriz es autoadjunta para ello. Si no, tenemos otros métodos como `EigenSolver`  o `ComplexEigenSolver` .
 
 ```c++
 Matrix3d selfadj(3);
 
-//Rellenar matriz.
+//Rellenar de modo que selfadj es autoadjunta
 
+//Crear el "solver" que realiza las operaciones con nuestra matriz
 SelfAdjointEigenSolver<Matrix3d> solver(selfadj);
 
+//Obtener autovalores y autovectores:
 cout << "Eigenvalues: " << endl << solver.eigenvalues() << endl;
 cout << "Eigenvectors: " << endl << solver.eigenvectors() << endl;
 ```
@@ -142,8 +144,8 @@ Por otro lado, Eigen tiene (aún como *en proceso*) módulos para hacer transfor
 
 Aunque Eigen puede ayudar mucho, algunas funciones (sobre todo las de matrices dispersas, los métodos para hacer mínimos cuadrados, etc) son algo incómodas de utilizar. Paquetes como Numpy (Python) emplean el mismo código base que Eigen (BLAS/LAPACK/ARPACK), siendo comparables en velocidad (si no usamos bucles nativos de Python) y permiten trabajar de forma muchísimo más sencilla el trabajo con vectores y matrices debido a la notación con *slicing* de los vectores de Python.
 
-Como dije al principio, cada lenguaje tiene su propósito. Si necesitas un código de simulación altamente eficiente, y tienes que hacer uso de álgebra lineal complicada, C++ es tu mejor opción y Eigen se ocupará de forma eficiente de muchos cuellos de botella. Sin embargo, si has sacado datos de una simulación y estás usando Eigen para analizarlos, ajustando mínimos cuadrados, o haciendo Fourier, probablemente cambiar a Python para esta tarea sea más productivo: es más cómodo, y tiene más opciones para el análisis. 
+Como dije al principio, cada lenguaje tiene su propósito. Si necesitas un código de simulación altamente eficiente, y tienes que hacer uso de álgebra lineal complicada, C++ es tu mejor opción y Eigen se ocupará de muchos cuellos de botella. Sin embargo, si has sacado datos de una simulación y estás usando Eigen para analizarlos, ajustando mínimos cuadrados, o haciendo Fourier, probablemente cambiar a Python para esta tarea sea más productivo: es más cómodo, y tiene más opciones para el análisis. 
 
-Eigen, por el otro lado, es una librería ideal para resolver operaciones que necesiten cálculos con matrices o vectores, incluso si no empleamos ninguna de las funciones para calcular autovalores, inversas ni ninguna otra cosa. El hecho de que la clase ya esté hecha, tenga una sintaxis clara, sea sencilla de utilizar, y la sobrecarga de los operadores ariméticos esté optimizada probablemente mejore nuestro código, por el mero de emplearla.
+Eigen, por el otro lado, es una librería ideal para resolver operaciones que necesiten cálculos con matrices o vectores, incluso si no empleamos ninguna de las funciones para calcular autovalores, inversas ni ninguna otra cosa. El hecho de que la clase ya esté hecha, tenga una sintaxis clara, sea sencilla de utilizar, y la sobrecarga de los operadores ariméticos esté optimizada probablemente mejore nuestro código, por el mero hecho de emplearla.
 
 

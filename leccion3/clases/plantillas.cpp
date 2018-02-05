@@ -10,7 +10,7 @@ template<class T>
 class polinomio
 {
 public:
-    polinomio(int grado, T coefs[MAX_P_SIZE]);
+    polinomio(int grado, const T coefs[MAX_P_SIZE]);
 
     void set_coef(int j, T value);
     T get_coef(int j) const;
@@ -28,7 +28,7 @@ private:
 
 
 template<class T>
-polinomio<T>::polinomio(int grado, T coefs[MAX_P_SIZE])
+polinomio<T>::polinomio(int grado, const T coefs[MAX_P_SIZE])
 {
     int j;
     n = grado;
@@ -50,7 +50,7 @@ polinomio<T> polinomio<T>::operator+(const polinomio &other) const
     int i; //Contador
     for (i=0; i < suma_grado; i++)
     {
-        coefs[i] = coeficientes[i] + other.get_coef(i); //Suma coeficientes
+        coefs[i] = coeficientes[i] + other[i]; //Suma coeficientes
     }
     while (coefs[suma_grado-1] == 0 && suma_grado > 0)
     {

@@ -350,6 +350,38 @@ y editar directamente los valores de los coeficientes del polinomio.
 
 Al igual que se puede sobrecargar el operador `[]` , podemos sobrecargar `()`. Este operador es mucho más versátil, ya que puede admitir un número arbitrario de argumentos. Si tuviéramos, por ejemplo, una matriz, es posible sobrecargar los paréntesis para poder acceder al elemento como `matriz(i,j)` , en una sintaxis parecida a Python/Numpy o Fortran.
 
+### Operador  `<<` 
+
+Este es el operador que utilizamos para sacar nuestro objeto a un fichero, habitualmente la pantalla. A diferencia de los operadores anteriores, dado que se ejecutará como `output << miobjeto`,  no puede ir dentro de la clase: C++ lo entiende como `output.operator<<(miobjeto)` , de modo que el primer argumento debe ser obligatoriamente `output`. Si fuera dentro de la clase recibiría el propio objeto como argumento  (como pasa con `+` , por ejemplo). 
+
+Por tanto, debe ir fuera de la clase. Podemos, a pesar de ello, acceder a los miembros privados de la clase. Solo hay que declarar esta función como *amiga de la clase*. Para ello la declaramos como otra función cualquiera de la clase, y añadimos la palabra clave *friend*, de la siguiente manera:
+
+```c++
+#include<fstream> 
+
+class foo
+{
+	public:
+	friend ostream& operator<<(std::ostream& os, const foo& f)
+	private:
+	double priv;
+}
+```
+
+De esta manera, nuestra clase recibe el `ostream` como primer argumento por referencia, y la clase (que ahora debe ser incluido explícitamente) como el segundo. Después, podemos proceder a implementarlo:
+
+```c++
+ostream& operator<<(std::ostream& os, const foo& f)
+{
+	os << f.priv;
+	return os;
+}
+```
+
+Como detalles interesantes, observa que no hay que poner `foo:operator<<` precisamente porque este método no pertenece a la clase, solamente es amigo suyo. Y como amigo, puede acceder a ciertas cosas privadas, como la variable `priv`.  Además, el `ostream` debe devolverse para que siga encadenando salidas. 
+
+> Ojo con hacer cosas del tipo `os << f.priv << " "`  o bien `os << f.priv << endl` , que pueden ser muy incómodas a la hora de organizar la salida en ficheros. 
+
 
 ## Plantillas
 

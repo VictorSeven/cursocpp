@@ -88,7 +88,7 @@ Para el caso de encontrar cuellos de botella, podemos ejecutar `valgrind --tool=
 Se puede encontrar más información en [su web](http://valgrind.org/).
 
 
-## Algunos trucos para optimizar
+## Algunos trucos para optimizar: numéricos
 
 ### 1. Cada operación importa
 
@@ -118,7 +118,7 @@ for (i=0; i < n; i++)
 ```
 
 Aunque esto no se va a notar mucho con las operaciones aritméticas, sí hay una diferencia si incluye funciones como senos, exponenciales, o raíces cuadradas. Por ejemplo, la función `sqrt` , cada vez que es llamada, ejecuta una variante del algoritmo de Newton-Rapshon. Es decir, hay un **bucle** por cada llamada. Otras funciones simplemente están representadas por una serie de Taylor, o una más eficiente. En todo caso, al final es un bucle dentro de otro. Estas funciones debemos tratar de evitarlas lo máximo posible. 
-
+ 
 En concreto, a la hora de calcular distancias, es buena práctica trabajar con las distancias al cuadrado siempre y cuando sea posible, por ejemplo, en el siguiente código que comprueba si un punto está dentro de un círculo centrado en cero:
 
 ```c++
@@ -133,7 +133,14 @@ if (x*x+y*y <= r2) cout << "dentro" << endl;
 
 ### 2. Usa siempre las referencias
 
-Esto es algo en lo que he insistido bastante en el tutorial de clases, pero merece la pena decirlo una vez más: evita las copias. Pueden acabar (mucho antes de lo que te imaginas) con la RAM de tu ordenador, y, encima, hacen el código mucho más lento. **Pasa siempre los objetos por referencia.**
+Esto es algo en lo que he insistido bastante en el tutorial de clases, pero merece la pena decirlo una vez más: evita las copias. Pueden acabar (mucho antes de lo que te imaginas) con la RAM de tu ordenador, y, encima, hacen el código mucho más lento. **Pasa siempre los objetos por referencia.** 
+
+Una caso donde hay que tener cuidado es al trabajar sobrecargando operadores. Los consejos que dimos en su momento (como usar `+=` en lugar de`+`)  pueden servir a menudo, pero a veces necesitamos operaciones más complicadas. En este caso tenemos dos opciones:
+
+1. Usar funciones con un número arbitrario de argumentos, mediante plantillas.
+2. Emplear la evaluación perezosa. 
+
+Actualmente mi favorita es la segunda, que explico más abajo. Otras opciones  más de andar por casa (por ejemplo, si sabemos que no vamos a usar más de 3 sumandos) es hacer una función  `suma`  con tres argumentos. 
 
 ### 3. ¡Constantes!
 
@@ -258,3 +265,125 @@ double aux_f(double x, double dx, vector<double>& tabla)
 ```
 
 La función `find_index`  es la que devuelve el índice tal que `tabla[j+1]>x>tabla[j]`. Una forma muy eficiente (y fácil de implementar) de hacer esto es emplear un [algoritmo de búsqueda binaria](https://en.wikipedia.org/wiki/Binary_search_algorithm). Este calculará `j`  en solo `log2(n)+1` operaciones. Si hacemos un millón de divisiones, solamente necesitamos 20 iteraciones (como máximo) para encontrar `j`. Después, hacemos una interpolación lineal. Con esto, calcular cualquier función, por complicada que sea, acaba necesitando solo unas 20-30 operaciones, lo que puede acelerar mucho el código si la llamamos a menudo.
+
+## Algunos trucos para optimizar: estructura
+
+Los trucos anteriores son de aplicación usual en el ámbito numérico. Ahora pongo un par que he encontrado útiles a la hora de trabajar con clases, para que la gestión de memoria no atranque nuestros procesos. 
+
+### 1. El inicializador de miembros
+
+Aprovecho este momento para introducir una nueva forma de crear un constructor para una clase: el constructor usando listas de inicialización.  Nosotros sabemos hacer un constructor de la siguiente manera:
+
+```c++
+class ejemplo
+{
+	public:
+	ejemplo (vector<double> &v)
+	{
+		mivector = v;
+	}
+	private:
+	vector<double> mivector;
+};
+```
+
+Sin embargo, es posible hacerlo con una sintaxis más corta (y más conveniente, como veremos enseguida):
+
+```c++
+class ejemplo
+{
+	public:
+	ejemplo (vector<double> &v) : mivector(v) {};
+
+	private:
+	vector<double> mivector;
+};
+```
+
+Ambos códigos son equivalentes en la práctica, pero el segundo es más eficiente. Lo que hace el primero es construir primero el objeto. Eso hace que `mivector`  se le asigne un valor, usando su constructor por defecto.  Sin embargo, el segundo  construye el objeto y asigna directamente `mivector = v` ,  sin construir `v`.  Por supuesto, en muchos casos el constructor por defecto no supone muchas operaciones. En otros, podemos notar la diferencia.
+
+### 2. La evaluación perezosa
+
+En un tutorial anterior ya hablamos de evaluación perezosa. Aquí explico con cierto detalle cómo funciona esta técnica, para evitar que las expresiones del tipo `a+b+c+d+...`  vayan devolviendo copias en lugar de hacerlo por referencia. Es una técnica algo complicada, pero espero que con el ejemplo incluido se haga más claro.
+
+No queremos, por tanto, que una  operación devuelva copias. Nunca. Sin embargo, los operadores deben devolver algo, y no podemos cambiar el número de argumentos que reciben. 
+
+Digamos que tenemos una clase cualquiera, llamada `ejemplo`,  con `+`  sobrecargado. La idea es la siguiente: el operador `+`, por ejemplo, puede devolver un objeto de un nuevo tipo, `proxy`, que almacene solo las referencias a los `ejemplos` que participan en la suma.  La siguiente suma será de un `ejemplo`  con un `proxy` . Esta suma también dará un `proxy` , que almacenará una referencia al proxy anterior y al nuevo `ejemplo` . Si sumamos dos `proxy` , haremos lo mismo: generar un `proxy`  con referencias a los dos anteriores. 
+
+Esto genera una estructura tipo árbol. Por ejemplo, si  representamos los `ejemplo`  por `e` y los `proxy`  con `p` . Una suma se va almacenando de la siguiente manera:
+
+```c++
+//Ejemplo 1:
+e1 + e2 + e3 + e4 = //Suma de 4 ejemplos
+p1(e1,e2) + e3 + e4 = //Se hace un proxy que guarda referencias a e1 y e2
+p2(p1(e1,e2), e3) + e4 //Ahora el p2 tiene un proxy a un proxy y un ejemplo
+p3(p2(p1(e1,e2), e3), e4); //¡Todo almacenado!
+
+//Ejemplo 2:
+(e1 + e2) + (e3 + e4) = //Suma de 4 ejemplos
+p1(e1,e2) + p2(e3,e4) = //Ahora hay dos proxys
+p3(p1(e1,e2), p2(e3,e4)) //Proxy a dos proxys
+```
+
+Por último, lo que hacemos es *engañar* a  la plantilla. Digamos que el objeto `ejemplo` tiene una función `get_valor`  que obtiene un valor numérico (por ejemplo, un `double` )  y que la suma de ejemplos sea simplemente la suma de estos valores. Lo que hacemos es dotar a `proxy` de este `get_valor` . ¿Qué es lo que hace esta función en un proxy? Sumar los valores de sus dos miembros. Y así se evalúa de forma recursiva:
+
+```c++
+//Ejemplo 1:
+p3(p2(p1(e1,e2), e3), e4).gv() = //Obtengamos el valor (gv = get_valor)...
+p2(p1(e1,e2), e3).gv() + e4.gv() = //Y seguimos con p2...
+(p1(e1,e2).gv() + e3.gv()) + e4.gv() = 
+((e1.gv() + e2.gv()) + e3.gv()) + e4.gv() =
+e1.gv() + e2.gv() + e3.gv() + e4.gv()
+//Una vez con los paréntesis quitados, ¡ya tenemos la solución!
+
+//Ejemplo 2:
+p3(p1(e1,e2), p2(e3,e4)).gv() = //Proxy a dos proxys
+p1(e1,e2).gv() + p2(e3,e4).gv() =
+(e1.gv() + e2.gv()) + (e3.gv() + e4.gv()) //¡Respeta orden de operaciones!
+```
+
+Entremos ahora un poco más en los tecnicimos. Un código completo de ejemplo está en este repositorio, bajo la carpeta `lazy` . Nosotros vamos a los detalles conceptuales importantes.
+Un objeto de tipo proxy se puede hacer muy fácilmente con plantillas:
+
+```c++
+template<class lhs, class rhs>
+class proxy
+{
+	public:
+	proxy(lhs const& _a, rhs const& _b) : a(_a), b(_b); {}
+	
+	private:
+	lhs const& a;
+	rhs const& b;
+	
+}
+```
+
+Observa que lo que guarda en realidad son **referencias constantes**. Este detalle es importante: obliga a que tengamos que utilizar un constructor de miembros, y facilita mucho la vida al compilador: solo almacenamos una referencia, que no va a cambiar. Y al pasar referencias, no importa cómo de grande sea el objeto, porque lo único que pasamos es la dirección de memoria donde está.  La plantilla hace que podamos crear un proxy de cualquier cosa.
+
+Lo siguiente es crear los operadores `+` . En este caso, hay que sobrecargar los siguientes: 
+
+```c++
+//Dos ejemplos dan un proxy
+proxy<ejemplo, ejemplo> operator+(const ejemplo &p, const ejemplo &q);
+
+//Proxy + ejemplo
+template<class l, class r>  proxy<suma_proxy<l,r>, ejemplo> operator+(const proxy<l,r> &sp, const ejemplo &p);
+```
+
+Con esto debidamente implementado, ya podemos sumar y devolver `proxys`  en estructura de árbol, como en los ejemplos anteriores. 
+
+> Un detalle puede ser implementar también el operador ejemplo + proxy, para que funcione la suma por la izquierda. 
+
+Para ello, implementamos simplemente la función `get_valor`, como 
+
+```c++
+template<class lhs, class rhs>
+double proxy<lhs, rhs>::get_valor() 
+{
+    return a.get_valor() + b.get_valor();
+}
+```
+
+Si `a`  y `b`  son `proxy` ,  la función sigue recursivamente. Si no lo son, van devolviendo valores.  Es importante que `ejemplo`  posea también una función `get_valor` .  Por último, después de sumar, necesitamos poder convertir el objeto final (que no olvidemos, sigue siendo un `proxy` a nuestro nuevo `ejemplo` . Para ello, lo mejor es sobrecargar el operador `= ` , de forma que modifique el objeto actual con los nuevos valores obtenidos en la suma. Simplemente habrá que llamar a `get_valor`  para que efectúe la cascada de operaciones. 
+

@@ -1,4 +1,5 @@
-﻿# Día 2: Recordatorio de C++
+﻿Día 2: Recordatorio de C++
+================
 
 ## Variables y estructura básica
 

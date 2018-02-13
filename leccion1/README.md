@@ -1,4 +1,5 @@
-﻿# Día 1: Configurar y comenzar
+﻿Día 1: Configurar y comenzar
+=================
 
 ## El entorno Code::Blocks
 
@@ -90,7 +91,7 @@ Para un código que tarda 10 segundos en ejecutarse, esperar 1 minuto es razonab
 Existen algunos trucos para acelerar Python casi hasta la velocidad de C++, pero de momento son algo engorrosos, y hacen perder un poco la legibilidad del código. Sin embargo, pueden ser una herramienta excelente en algunas ocasiones. 
 
 ### Disclaimer
-En esta discusión se han invertido muchas líneas ya en foros de internet. El principal problema es que la gente cree que tiene que escoger un lenguaje para hacer las cosas, y esto no es verdad.
+En esta discusión se han invertido muchas líneas ya en foros de internet. El principal problema es que la gente cree que tiene que escoger un único lenguaje para hacer todas las cosas, y esto no es verdad.
 **No hay un lenguaje mejor que otro. La elección del lenguaje depende de la tarea a realizar.** 
 Por ejemplo, *para mí*, dadas las características de las simulaciones que suelo hacer, lo mejor es realizar las simulaciones en C++, y después analizar los datos de la simulación con Python. Alguien de fluidos, que requiere resolver ecuaciones en derivadas parciales con método de los elementos finitos, probablemente obtenga mejor resultado con Fortran que con C++. Lo importante es estar más o menos actualizado y saber cuál es la mejor herramienta para una tarea en concreto. 
 

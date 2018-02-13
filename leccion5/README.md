@@ -1,4 +1,5 @@
-﻿# Día 5: Optimizar código
+Día 5: Optimizar código
+==============
 
 Ya tenemos todos los elementos que podemos necesitar para mejorar nuestro código. Podemos usar complejos, vectores, o incluso hacer nosotros nuestras propias clases. El objetivo de hoy es conseguir que el código se ejecute tan rápido como sea posible... y sin errores.
 
@@ -32,6 +33,8 @@ Code::Blocks tiene disponibles todos los *flags* del compilador. Solamente tenem
 ## Depurar y encontrar errores
 
 Una forma chapucera de depurar un programa, cuando da un error de ejecución, es ir escribiendo `cout`  para ver hasta dónde llega o cuánto valen las variables. Para andar por casa está bien, pero lo mejor es usar un depurador. GNU tiene el depurador `gdb` .
+
+> Ten en cuenta que además las optimizaciones como `- O3` cambian el comportamiento del código, que ante alguna clase de fallos puede ser inestable, y difícil de depurar con salidas por pantalla.
 
 Code::Blocks puede usar `gdb` directamente en el entorno para localizar problemas, pero solo en proyectos grandes. En ficheros separados (que son los que habitualmente usamos para simular) no está disponible. Por tanto, lo mejor es usar `gdb`  desde la consola. 
 
@@ -81,9 +84,11 @@ El programa **Valgrind**, que se instala con Code::Blocks, es una aplicación qu
 
 Basta compilar el programa completo y luego ejecutar el comando `valgrind ./miprograma`  para ejecutar Valgrind. La información que da suele ser bastante oscura, pero da pistas útiles sobre los puntos en los que estamos haciendo una operación ilegal con la memoria. Es muy útil cuando estamos teniendo problemas con los códigos que devuelven referencias inválidas, por ejemplo. 
 
-De hecho, es útil como prueba pasar Valgrind a programas que *aparentemente* funcionan. Te sorprenderá ver que algunos de ellos tienen errores... que podrían estar afectando a los resultados.
+> **Nota importante: ** Valgrind trabaja sobre los ejecutables, y no sobre el código. Por este motivo, el output suele ser bastante oscuro, y a menudo difícil de comprender. Para obtener un mejor resultado, es importante que el ejecutable haya sido compilado con la opción `-g`. De esta forma Valgrind será capaz de decirnos en qué línea de nuestro código ha detectado el error. 
 
-Para el caso de encontrar cuellos de botella, podemos ejecutar `valgrind --tool=callgrind ./miprograma`. 
+De hecho, es útil como prueba pasar Valgrind a programas que *aparentemente* funcionan, sin dar errores. Te sorprenderá ver que algunos de ellos tienen errores... que podrían estar afectando a los resultados.
+
+Valgrind es un programa muy completo para examinar el comportamiento de los programas. Entre otras cosas, se puede utilizar para buscar cuellos de botella, usando`valgrind --tool=callgrind ./miprograma`. 
 
 Se puede encontrar más información en [su web](http://valgrind.org/).
 
@@ -117,9 +122,9 @@ for (i=0; i < n; i++)
 }
 ```
 
-Aunque esto no se va a notar mucho con las operaciones aritméticas, sí hay una diferencia si incluye funciones como senos, exponenciales, o raíces cuadradas. Por ejemplo, la función `sqrt` , cada vez que es llamada, ejecuta una variante del algoritmo de Newton-Rapshon. Es decir, hay un **bucle** por cada llamada. Otras funciones simplemente están representadas por una serie de Taylor, o una más eficiente. En todo caso, al final es un bucle dentro de otro. Estas funciones debemos tratar de evitarlas lo máximo posible. 
+Aunque esto no se va a notar mucho con las operaciones aritméticas, sí hay una diferencia cuando incluye funciones como senos, exponenciales, o raíces cuadradas. Por ejemplo, la función `sqrt` , cada vez que es llamada, ejecuta una variante del algoritmo de Newton-Rapshon. Es decir, hay un **bucle** por cada llamada. Otras funciones simplemente están representadas por una serie de Taylor, o una más eficiente. En todo caso, al final es un bucle dentro de otro. Estas funciones debemos tratar de evitarlas lo máximo posible. 
  
-En concreto, a la hora de calcular distancias, es buena práctica trabajar con las distancias al cuadrado siempre y cuando sea posible, por ejemplo, en el siguiente código que comprueba si un punto está dentro de un círculo centrado en cero:
+En concreto, a la hora de calcular distancias, es buena práctica trabajar con las distancias al cuadrado siempre y cuando sea posible; por ejemplo, en el siguiente código que comprueba si un punto está dentro de un círculo centrado en cero:
 
 ```c++
 double r = 10.0;
@@ -162,7 +167,7 @@ for (i=0; i < 6; i++) s += 42;
 for (i=0; i < int(sqrt(42)); i++) s+=42;
 ```
 
-De hecho, se puede llegar al culmen de la maldad con este comando:
+Con lo cual está evaluando la raíz en cada comprabación, dentro del bucle for, en lugar de realizarla una única vez. `define` puede definir cualquier tipo de macro. De hecho, se puede llegar al culmen de la maldad con este comando:
 
 ```c++
 #define true false
@@ -188,6 +193,8 @@ for (i=0; i < 10000000; i++) v[i] = i;
 ```
  
 [Esta comparativa](https://lemire.me/blog/2012/06/20/do-not-waste-time-with-stl-vectors/) muestra que podemos estar haciendo un ahorro importante, si realizamos muchas veces esta operación.
+
+> Recuerda además que la clase `vector` es igual de eficiente que un array siempre y cuando no haya cambios de tamaño.
 
 ### 5. Cuidado con `erase` .
 
@@ -264,7 +271,7 @@ double aux_f(double x, double dx, vector<double>& tabla)
 }
 ```
 
-La función `find_index`  es la que devuelve el índice tal que `tabla[j+1]>x>tabla[j]`. Una forma muy eficiente (y fácil de implementar) de hacer esto es emplear un [algoritmo de búsqueda binaria](https://en.wikipedia.org/wiki/Binary_search_algorithm). Este calculará `j`  en solo `log2(n)+1` operaciones. Si hacemos un millón de divisiones, solamente necesitamos 20 iteraciones (como máximo) para encontrar `j`. Después, hacemos una interpolación lineal. Con esto, calcular cualquier función, por complicada que sea, acaba necesitando solo unas 20-30 operaciones, lo que puede acelerar mucho el código si la llamamos a menudo.
+La función `find_index`  es la que devuelve el índice tal que `tabla[j+1]>x>tabla[j]`. Una forma muy eficiente (y fácil de implementar) de hacer esto es emplear un [algoritmo de búsqueda binaria](https://en.wikipedia.org/wiki/Binary_search_algorithm). Este calculará `j`  en solo `log2(n)+1` operaciones. Si hacemos un millón de divisiones, solamente necesitamos 20 iteraciones (¡como máximo!) para encontrar `j`. Después, hacemos una interpolación lineal. Con esto, calcular cualquier función, por complicada que sea, acaba necesitando solo unas 20-30 operaciones, lo que puede acelerar mucho el código si la llamamos a menudo.
 
 ## Algunos trucos para optimizar: estructura
 
@@ -300,11 +307,11 @@ class ejemplo
 };
 ```
 
-Ambos códigos son equivalentes en la práctica, pero el segundo es más eficiente. Lo que hace el primero es construir primero el objeto. Eso hace que `mivector`  se le asigne un valor, usando su constructor por defecto.  Sin embargo, el segundo  construye el objeto y asigna directamente `mivector = v` ,  sin construir `v`.  Por supuesto, en muchos casos el constructor por defecto no supone muchas operaciones. En otros, podemos notar la diferencia.
+Ambos códigos son equivalentes en la práctica, pero el segundo es más eficiente. Básicamente, la diferencia es que el primero debe inicializar primero `mivector`, usando su constructor por defecto. Luego invocará el constructor de `ejemplo`, asignando el vector.  Sin embargo, el segundo  construye el objeto y asigna directamente `mivector = v` ,  sin llamar al constructor por defecto de  `mivector`.  Por supuesto, en muchos casos el constructor por defecto no supone muchas operaciones. En otros, podemos notar la diferencia.
 
 ### 2. La evaluación perezosa
 
-En un tutorial anterior ya hablamos de evaluación perezosa. Aquí explico con cierto detalle cómo funciona esta técnica, para evitar que las expresiones del tipo `a+b+c+d+...`  vayan devolviendo copias en lugar de hacerlo por referencia. Es una técnica algo complicada, pero espero que con el ejemplo incluido se haga más claro.
+En un tutorial anterior ya hablamos de evaluación perezosa. Aquí explico con cierto detalle cómo funciona esta técnica, para evitar que las expresiones del tipo `a+b+c+d+...`  vayan devolviendo copias en lugar de hacerlo por referencia. Es una técnica algo complicada, pero espero que con el ejemplo incluido en el repositorio se haga más claro.
 
 No queremos, por tanto, que una  operación devuelva copias. Nunca. Sin embargo, los operadores deben devolver algo, y no podemos cambiar el número de argumentos que reciben. 
 

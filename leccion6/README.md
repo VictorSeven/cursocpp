@@ -1,6 +1,7 @@
-﻿# Día 6: la biblioteca Eigen
+Día 6: la biblioteca Eigen
+===============
 
-Saber hacer clases para los módulos de código que podamos necesitar es muy útil.  Además, nos permite entender cómo funcionan los objetos de la STL, así como otras bibliotecas de C++.  En esta última lección, por el contrario, trabajaremos sobre una biblioteca existente.
+Saber hacer clases para los módulos de código que podamos necesitar es muy útil.  Además, nos permite entender cómo funcionan los objetos de la STL, así como otras bibliotecas de C++.  En esta última lección trabajaremos sobre una biblioteca existente.
 
 A menudo, lo que necesitamos es operar de forma eficiente con álgebra lineal: operaciones con matrices, diagonalización, resolución de sistemas lineales, etc. Aunque tenemos herramientas para hacer esto nosotros mismos, existen ya bibliotecas que se ocupan de esto y que han sido trabajadas por muchos años: BLAS/LAPACK y ARPACK son unos ejemplos. Las primeras están pensadas para el trabajo con matrices y vectores de forma eficiente, mientras que ARPACK está especializada en el cálculo de autovectores y autovalores para matrices de gran tamaño.  Están escritas en Fortran, aprovechando que este lenguaje se diseñó teniendo en cuenta esta aplicación.
 
@@ -142,9 +143,9 @@ Por otro lado, Eigen tiene (aún como *en proceso*) módulos para hacer transfor
 
 ## Un comentario sobre el uso de Eigen en C++
 
-Aunque Eigen puede ayudar mucho, algunas funciones (sobre todo las de matrices dispersas, los métodos para hacer mínimos cuadrados, etc) son algo incómodas de utilizar. Paquetes como Numpy (Python) emplean el mismo código base que Eigen (BLAS/LAPACK/ARPACK), siendo comparables en velocidad (si no usamos bucles nativos de Python) y permiten trabajar de forma muchísimo más sencilla el trabajo con vectores y matrices debido a la notación con *slicing* de los vectores de Python.
+Aunque Eigen puede ayudar mucho, algunas funciones (sobre todo las de matrices dispersas, los métodos para hacer mínimos cuadrados, etc) son algo incómodas de utilizar. Paquetes como Numpy (Python) emplean el mismo código base que Eigen (BLAS/LAPACK/ARPACK y similares), siendo comparables en velocidad (si no usamos bucles nativos de Python) y permiten trabajar de forma muchísimo más sencilla el trabajo con vectores y matrices debido a la notación con *slicing* de los vectores de Python.
 
-Como dije al principio, cada lenguaje tiene su propósito. Si necesitas un código de simulación altamente eficiente, y tienes que hacer uso de álgebra lineal complicada, C++ es tu mejor opción y Eigen se ocupará de muchos cuellos de botella. Sin embargo, si has sacado datos de una simulación y estás usando Eigen para analizarlos, ajustando mínimos cuadrados, o haciendo Fourier, probablemente cambiar a Python para esta tarea sea más productivo: es más cómodo, y tiene más opciones para el análisis. 
+Como dije al principio, cada lenguaje tiene su propósito. Si necesitas un código de simulación altamente eficiente, y tienes que hacer uso de álgebra lineal complicada, C++ es tu mejor opción y Eigen se ocupará de muchos cuellos de botella del código. Sin embargo, si has sacado datos de una simulación y estás usando Eigen para analizarlos, ajustando mínimos cuadrados, o haciendo Fourier, probablemente cambiar a Python para esta tarea sea más productivo: es más cómodo, y tiene más opciones para el análisis. 
 
 Eigen, por el otro lado, es una librería ideal para resolver operaciones que necesiten cálculos con matrices o vectores, incluso si no empleamos ninguna de las funciones para calcular autovalores, inversas ni ninguna otra cosa. El hecho de que la clase ya esté hecha, tenga una sintaxis clara, sea sencilla de utilizar, y la sobrecarga de los operadores ariméticos esté optimizada probablemente mejore nuestro código, por el mero hecho de emplearla.
 

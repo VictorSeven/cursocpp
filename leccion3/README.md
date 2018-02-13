@@ -1,4 +1,5 @@
-﻿# Día 3: Clases 
+Día 3: Clases 
+========
 
 Hasta este punto, hemos instalado y configurado un entorno orientado a trabajar con C++, y hemos repasado los conceptos básicos del lenguaje. El próximo paso es repasar la sintaxis básica de clases, y extenderla para poder sacar partido de las aplicaciones que C++ nos ofrece en programación orientada a objetos.
 

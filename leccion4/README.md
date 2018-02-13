@@ -1,4 +1,5 @@
-﻿# Día 4: La biblioteca estándar
+Día 4: La biblioteca estándar
+=================
 
 Ahora que ya conocemos en profundidad qué es una clase y cómo funciona, podemos empezar a explorar algunas de las clases que vienen incluidas en la biblioteca estándar de C++ (STL, por sus siglas en inglés). 
 

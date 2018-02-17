@@ -87,7 +87,19 @@ T& polinomio<T>::operator[](const int j)
 template<class T>
 void polinomio<T>::set_coef(int j, T value)
 {
-    coeficientes[j] = value;
+    coeficientes[j] = value; //Asignar el valor
+    //Si nuestro indice es mayor que el grado, aumentar el grado
+    if (j > n) n = j;
+
+    //Si el que cambiamos es el último, y lo cambiamos a cero, reducir el grado
+    //El bucle se asegura de que ir bajando hasta encontrar el primero no nulo
+    if (j == n)
+    {
+        while (coeficientes[n] == 0 && n > 0)
+        {
+            n--;
+        }
+    }
     return;
 }
 
